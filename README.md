@@ -82,6 +82,3 @@ DIAdataDesktop is designed to **cover the complete DIA Stack**, including:
 ## 🧱 Tech Stack
 - **C# / .NET 10 (WPF Desktop)**
 ---
-
-## 🗂️ Project Structure
-
