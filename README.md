@@ -1,84 +1,107 @@
 # DIAdataDesktop 💎
 
-**DIAdataDesktop** is a full-featured **Windows desktop application** for exploring the **entire DIA Oracle ecosystem**.
-It provides a clean, fast and user-friendly interface for **all DIA REST & GraphQL APIs** far beyond raw HTTP calls or dashboards.
+DIAdataDesktop is a Windows desktop application for working with data provided by the DIA Oracle network.
+The goal of this project is to make DIA data easily accessible in a structured and usable way, without having to interact directly with raw REST or GraphQL endpoints.
 
-This project aims to become the **reference desktop client** for DIA data.
-
----
-
-## 🚀 Vision
-
-> One application.  
-> All DIA data.  
-> For developers, analysts, traders and data engineers.
-
-DIAdataDesktop is designed to **cover the complete DIA Stack**, including:
-- Digital asset prices
-- DeFi market data
-- Exchanges & blockchains
-- Historical chart points
-- Guest quotations
-- RWA prices (Forex, Commodities, ETFs)
+The application is built as a modular WPF desktop client and is continuously extended as new DIA APIs or use cases are added.
 
 ---
 
-## 🧩 Supported DIA APIs (current & planned)
+## Purpose
 
-### 🔹 Digital Assets Market Data
-- Token Price Quotation (by **symbol**)
-- Token Price Quotation (by **address**)
-- Quotable Assets
+DIAdataDesktop is intended as a practical tool for:
 
-### 🔹 Assets Information
+- developers who work with DIA data
+- analysts and researchers
+- traders who want a clear overview of market data
+- anyone who prefers a desktop application over browser dashboards or manual API calls
+
+The focus is on clarity, performance and extensibility rather than visual effects.
+
+---
+
+## Covered DIA Data
+
+The application is designed to support the full DIA stack.  
+Some endpoints are already implemented, others are planned or partially integrated.
+
+### Digital Assets Market Data
+- Token price quotation by symbol
+- Token price quotation by address
+- List of quotable assets
+
+### Assets Information
 - Blockchains
 - Exchanges
-- Centralized Exchange Pairs
-- Asset Last Trades
+- Centralized exchange pairs
+- Asset last trades
 
-### 🔹 DeFi Data
-- DeFi Protocols Collateral Information
-- DEX Pool Liquidity
-- Slippage Calculation (Uniswap V2 & forks)
+### DeFi Data
+- DeFi protocol collateral information
+- DEX pool liquidity
+- Slippage calculation (Uniswap V2 and compatible forks)
 
-### 🔹 Chart Data
-- Exchange Chart Points
-- Asset Chart Points
+### Chart Data
+- Exchange chart points
+- Asset chart points
 
-### 🔹 Guest Quotations
-- Guest Symbols
-- Guest Quotation
+### Guest Quotations
+- Guest symbols
+- Guest quotations
 
-### 🔹 Real World Assets (RWA)
+### Real World Assets (RWA)
 - Forex
 - Commodities
 - ETFs
 
-> All data is sourced directly from **DIA Oracles REST / GraphQL APIs**.
+All data is retrieved directly from official DIA REST and GraphQL APIs.
 
 ---
 
-## ✨ Current Features
+## Current Features
 
-### 🪙 Quotation Module
-- Query by **symbol** or **asset address**
-- Auto-refresh & manual refresh
-- Clear last-update indicator
-- Designed for quick checks & live monitoring
+### Quotation
+- Query token prices by symbol or by asset address
+- Manual refresh and automatic refresh
+- Clear indication of the last update time
+- Designed for quick lookups and continuous monitoring
 
-### 📊 Quoted Assets Module
-- Large asset table (DataGrid)
-- Volume, USD volume, decimals, address
-- Blockchain filter
-- Fast search (symbol / name / address)
-- Exchange & blockchain meta lists
+### Quoted Assets
+- Table view with large datasets
+- Volume, USD volume, decimals and address information
+- Blockchain-based filtering
+- Fast text search (symbol, name, address)
+- Separate meta lists for blockchains and exchanges
 
-### ⚙️ Meta Data
-- Live blockchains list
-- Live exchanges list
+### Meta Information
+- Live list of supported blockchains
+- Live list of exchanges
 - Exchange status indicators (e.g. scraper active)
+
 ---
 
-## 🧱 Tech Stack
-- **C# / .NET 10 (WPF Desktop)**
+## Technical Overview
+
+- C# / .NET 10
+- WPF desktop application
+- MVVM architecture (CommunityToolkit.Mvvm)
+
 ---
+
+## Status
+
+This project is under active development.
+The core architecture is stable, while features and API coverage are continuously expanded.
+
+---
+
+## Contributions
+
+Suggestions, bug reports and pull requests are welcome.
+If you work with DIA data and miss a specific feature, feel free to open an issue.
+
+---
+
+## License
+
+To be defined.
