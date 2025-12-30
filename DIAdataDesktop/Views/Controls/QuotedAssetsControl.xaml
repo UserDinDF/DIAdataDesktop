@@ -172,14 +172,14 @@
 
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel/>
+                    <WrapPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Button Style="{StaticResource TokenCardButton}"
-                            Width="360" Height="210"
+                            Width="360" Height="250"
                             Click="TokenCard_Click">
                         <Grid Margin="16">
                             <Grid.RowDefinitions>
@@ -197,14 +197,16 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Border Width="42" Height="42" CornerRadius="14"
-                                        Background="#0B1220" BorderBrush="#24314E" BorderThickness="1">
-                                    <TextBlock Text="{Binding Symbol}"
-                                               Foreground="#E5E7EB"
-                                               FontWeight="Bold"
-                                               FontSize="14"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"/>
+        Background="#0B1220" BorderBrush="#24314E" BorderThickness="1"
+        ClipToBounds="True">
+
+                                    <Grid>
+                                        <Image Stretch="UniformToFill"
+               Source="{Binding IconUrl}"
+               ImageFailed="Image_ImageFailed"/>
+                                    </Grid>
                                 </Border>
+
 
                                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding Name}" Foreground="#E5E7EB"
@@ -212,8 +214,8 @@
                                     <TextBlock Text="{Binding Symbol}" Foreground="#94A3B8" Margin="0,2,0,0"/>
                                 </StackPanel>
 
-                                <Border Grid.Column="3" Style="{StaticResource PillBadge}" VerticalAlignment="Top">
-                                    <TextBlock Text="{Binding Symbol}" Foreground="#E5E7EB" FontSize="12" FontWeight="SemiBold"/>
+                                <Border Grid.Column="3" BorderBrush="White" BorderThickness="1" CornerRadius="5" VerticalAlignment="Top">
+                                    <TextBlock Text="{Binding Symbol}" FontFamily="Arial" Padding="3" Background="White" Foreground="Black" FontSize="12" FontWeight="SemiBold"/>
                                 </Border>
                             </Grid>
 
@@ -231,7 +233,10 @@
 
                                     <TextBlock Style="{StaticResource MutedLabel}" Text="Volume 24h (USD)"/>
                                     <TextBlock Style="{StaticResource ValueText}"
-                                               Text="{Binding VolumeUSD, StringFormat=$ {0:N0}}"/>
+                                               Text="{Binding Quotation.VolumeYesterdayUSD, StringFormat=$ {0:N0}}"/>
+
+                                    <TextBlock Style="{StaticResource MutedLabel}" Text="Sources"/>
+                                    <TextBlock Style="{StaticResource ValueText}" Text="{Binding CexExchangesCount, Mode=OneWay}"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1">
@@ -243,6 +248,9 @@
                                     <TextBlock Style="{StaticResource MutedLabel}" Text="Updated"/>
                                     <TextBlock Foreground="#94A3B8"
                                                Text="{Binding Time, StringFormat={}{0:HH:mm:ss}}"/>
+
+                                    <TextBlock Style="{StaticResource MutedLabel}" Text="Preis Yesterday"/>
+                                    <TextBlock Style="{StaticResource ValueText}" Text="{Binding Quotation.PriceYesterday, StringFormat=$ {0:N2}}"/>
                                 </StackPanel>
                             </Grid>
                         </Grid>

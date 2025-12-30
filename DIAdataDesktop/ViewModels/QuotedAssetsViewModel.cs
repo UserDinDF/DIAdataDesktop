@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace DIAdataDesktop.ViewModels
@@ -264,6 +265,7 @@ namespace DIAdataDesktop.ViewModels
 
                 // ✅ API call (server-side filter)
                 var list = await _api.GetQuotedAssetsAsync(bc, ct);
+           
 
                 var ordered = list.OrderByDescending(x => x.Volume).ToList();
 
@@ -329,10 +331,13 @@ namespace DIAdataDesktop.ViewModels
                     if (string.IsNullOrWhiteSpace(sym)) return;
 
                     var q = await _api.GetQuotationBySymbolAsync(sym, ct);
-
+                    var ex =  await _api.GetPairsAssetCexAsync(q.Blockchain, q.Address);
+                   
                     await _ui.InvokeAsync(() =>
                     {
                         row.Quotation = q;
+                        row.CexPairs = new ObservableCollection<DiaCexPairsByAssetRow>(ex);
+                        row.RecalcCexCounts();
                     }, DispatcherPriority.Background);
                 }
                 finally

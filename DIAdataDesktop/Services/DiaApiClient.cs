@@ -73,6 +73,25 @@ namespace DIAdataDesktop.Services
             return list ?? new List<DiaExchange>();
         }
 
+        public async Task<List<DiaCexPairsByAssetRow>> GetPairsAssetCexAsync(
+          string blockchain,
+          string address,
+          bool? verified = null,
+          CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(blockchain))
+                throw new ArgumentException("blockchain is null/empty.", nameof(blockchain));
+            if (string.IsNullOrWhiteSpace(address))
+                throw new ArgumentException("address is null/empty.", nameof(address));
+
+            var path = $"pairsAssetCex/{Uri.EscapeDataString(blockchain.Trim())}/{Uri.EscapeDataString(address.Trim())}";
+
+            if (verified.HasValue)
+                path += $"?verified={(verified.Value ? "true" : "false")}";
+
+            var list = await _http.GetFromJsonAsync<List<DiaCexPairsByAssetRow>>(path, ct);
+            return list ?? new List<DiaCexPairsByAssetRow>();
+        }
 
         /// <summary>
         /// GET /quotedAssets?blockchain=Polygon

@@ -274,6 +274,7 @@
                             Margin="0"
                             Padding="14,8"
                             Command="{Binding RefreshAllCommand}"
+                            Style="{StaticResource GhostButton}"
                             IsEnabled="{Binding IsBusy, Converter={StaticResource InvBool}}"
                             Background="#1D4ED8"
                             Foreground="White"
