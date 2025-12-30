@@ -13,6 +13,70 @@
             <converters:StringToVisibilityConverter x:Key="StringToVis"/>
             <converters:StringEqualsToBoolConverter x:Key="StringEqualsToBool"/>
 
+            <!-- Sidebar look -->
+            <LinearGradientBrush x:Key="SidebarBg" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#0A1630" Offset="0"/>
+                <GradientStop Color="#071225" Offset="1"/>
+            </LinearGradientBrush>
+
+            <SolidColorBrush x:Key="SidebarText" Color="#E5E7EB"/>
+            <SolidColorBrush x:Key="SidebarTextMuted" Color="#9CA3AF"/>
+            <SolidColorBrush x:Key="SidebarStroke" Color="#1F2A44"/>
+
+            <SolidColorBrush x:Key="MenuHoverBg" Color="#162548"/>
+            <SolidColorBrush x:Key="MenuActiveBg" Color="#1C3B7A"/>
+            <SolidColorBrush x:Key="MenuActiveStroke" Color="#2D64E3"/>
+
+            <!-- Menu item style (ToggleButton) -->
+            <Style x:Key="SidebarMenuItem" TargetType="ToggleButton">
+                <Setter Property="Foreground" Value="{StaticResource SidebarText}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="10,10"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border x:Name="bd"
+                           Background="{TemplateBinding Background}"
+                           BorderBrush="{TemplateBinding BorderBrush}"
+                           BorderThickness="{TemplateBinding BorderThickness}"
+                           CornerRadius="12">
+                                <ContentPresenter/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="{StaticResource MenuHoverBg}"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="{StaticResource MenuActiveBg}"/>
+                                    <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource MenuActiveStroke}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Small section header -->
+            <Style x:Key="SidebarSectionHeader" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource SidebarTextMuted}"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Margin" Value="0,18,0,8"/>
+            </Style>
+
+            <!-- Content area background -->
+            <SolidColorBrush x:Key="ContentBg" Color="#0B1220"/>
+            <SolidColorBrush x:Key="ContentCardBg" Color="#0F1B33"/>
+            <SolidColorBrush x:Key="ContentStroke" Color="#1E2A46"/>
+            
+            
             <Style TargetType="Button">
                 <Setter Property="Height" Value="34"/>
                 <Setter Property="Padding" Value="12,0"/>
