@@ -17,6 +17,6 @@ namespace DIAdataDesktop.Converters
             return isNull ? Visibility.Collapsed : Visibility.Visible;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => Binding.DoNothing;
+            => System.Windows.Data.Binding.DoNothing;
     }
 }

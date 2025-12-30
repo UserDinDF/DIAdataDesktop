@@ -22,7 +22,7 @@ namespace DIAdataDesktop.Converters
             if (value is bool b && b)
                 return parameter?.ToString() ?? "Symbol";
 
-            return Binding.DoNothing;
+            return System.Windows.Data.Binding.DoNothing;
         }
     }
 }

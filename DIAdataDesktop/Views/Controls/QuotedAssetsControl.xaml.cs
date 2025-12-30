@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 
 namespace DIAdataDesktop.Views.Controls
 {
-    public partial class QuotedAssetsControl : UserControl
+    public partial class QuotedAssetsControl : System.Windows.Controls.UserControl
     {
         public QuotedAssetsControl()
         {
@@ -22,7 +22,7 @@ namespace DIAdataDesktop.Views.Controls
         }
         private void TokenCard_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button btn) return;
+            if (sender is not System.Windows.Controls.Button btn) return;
             if (btn.Tag is not string tag) return;
 
             // Tag: "Network|Name|Address"
@@ -44,7 +44,7 @@ namespace DIAdataDesktop.Views.Controls
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Open link failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(ex.Message, "Open link failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

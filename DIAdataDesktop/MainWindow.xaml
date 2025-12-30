@@ -7,7 +7,9 @@
         xmlns:controls="clr-namespace:DIAdataDesktop.Views.Controls"
         xmlns:conv="clr-namespace:DIAdataDesktop.Converters"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Style="{StaticResource CustomWindowStyle}"
         mc:Ignorable="d"
+        Margin="0,0,0,0"
         Title="DIAdata Desktop" Height="780" Width="1180"
         WindowStartupLocation="CenterScreen"
         Background="#0B1220">

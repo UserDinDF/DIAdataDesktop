@@ -18,6 +18,6 @@ namespace DIAdataDesktop.Converters
             => string.Equals(value as string, _match, StringComparison.OrdinalIgnoreCase);
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => (value is bool b && b) ? _match : Binding.DoNothing;
+            => (value is bool b && b) ? _match : System.Windows.Data.Binding.DoNothing;
     }
 }

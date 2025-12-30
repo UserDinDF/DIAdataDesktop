@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using Brush = System.Windows.Media.Brush;
 
 namespace DIAdataDesktop
 {
@@ -100,7 +101,7 @@ namespace DIAdataDesktop
                 {
                     Children =
                     {
-                        new TextBlock { Text = title, FontSize = 20, FontWeight = FontWeights.SemiBold, Foreground = Brushes.White },
+                        new TextBlock { Text = title, FontSize = 20, FontWeight = FontWeights.SemiBold, Foreground = System.Windows.Media.Brushes.White },
                         new TextBlock { Text = subtitle, Margin = new Thickness(0,6,0,0), Foreground = (Brush)new BrushConverter().ConvertFromString("#9CA3AF") }
                     }
                 }
