@@ -3,11 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:viewmodels="clr-namespace:DIAdataDesktop.ViewModels"
-        xmlns:converters="clr-namespace:DIAdataDesktop.Converters"
+        xmlns:controls="clr-namespace:DIAdataDesktop.Views.Controls"
+        xmlns:conv="clr-namespace:DIAdataDesktop.Converters"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="DIAdata Desktop" Height="560" Width="980"
+        Title="DIAdata Desktop" Height="780" Width="1180"
         WindowStartupLocation="CenterScreen"
         Background="#F6F7FB">
 
@@ -16,265 +17,70 @@
     </Window.DataContext>
 
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-        <converters:StringEqualsToBoolConverter x:Key="StringEqualsToBoolConverter"/>
-        <!-- Card look -->
-        <Style x:Key="CardBorder" TargetType="Border">
-            <Setter Property="CornerRadius" Value="14"/>
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#E5E7EB"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="14"/>
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-        </Style>
 
-        <Style TargetType="TextBox">
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="Padding" Value="10,6"/>
-            <Setter Property="BorderBrush" Value="#D1D5DB"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-
-        <Style TargetType="Button">
-            <Setter Property="Height" Value="34"/>
-            <Setter Property="Padding" Value="12,0"/>
-            <Setter Property="Background" Value="#111827"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#111827"/>
-            <Setter Property="BorderThickness" Value="1"/>
-        </Style>
-
-        <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="#111827"/>
-            <Setter Property="BorderBrush" Value="#D1D5DB"/>
-        </Style>
-
-        <Style x:Key="LabelText" TargetType="TextBlock">
-            <Setter Property="Opacity" Value="0.72"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-
-        <Style x:Key="ValueText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-        </Style>
-
-        <!-- Small “chip” -->
-        <Style x:Key="Chip" TargetType="Border">
-            <Setter Property="CornerRadius" Value="999"/>
-            <Setter Property="Background" Value="#EEF2FF"/>
-            <Setter Property="BorderBrush" Value="#E0E7FF"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,4"/>
-        </Style>
+        <!-- Converters -->
+        <conv:InverseBooleanConverter x:Key="InvBool"/>
+        <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:StringToVisibilityConverter x:Key="StringToVis"/>
+        <conv:StringEqualsToBoolConverter x:Key="StringEqualsToBool"/>
     </Window.Resources>
 
     <Grid Margin="18">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="360"/>
             <ColumnDefinition Width="14"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- LEFT CARD -->
+        <!-- LEFT: Navigation / Status / Meta -->
         <Border Grid.Column="0" Style="{StaticResource CardBorder}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="12"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
+                <!-- Title -->
                 <StackPanel Grid.Row="0">
-                    <TextBlock Text="Watchlist" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="Doppelklick → Symbol laden" Opacity="0.65" Margin="0,2,0,0"/>
+                    <TextBlock Text="DIAdata Desktop" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Live quotation + quoted assets + meta lists" Opacity="0.65" Margin="0,2,0,0"/>
                 </StackPanel>
 
-                <ListBox Grid.Row="2"
-                         x:Name="WatchListBox"
-                         ItemsSource="{Binding Watchlist}"
-                         SelectedItem="{Binding Symbol, Mode=TwoWay}"
-                         BorderBrush="#E5E7EB"
-                         BorderThickness="1"
-                         Padding="6"
-                         Background="#FBFBFD">
-
-                    <!-- DoubleClick -> PickCommand(parameter = SelectedItem) -->
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction Command="{Binding PickCommand}"
-                                                   CommandParameter="{Binding SelectedItem, ElementName=WatchListBox}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Padding" Value="10,8"/>
-                            <Setter Property="Margin" Value="0,0,0,6"/>
-                            <Setter Property="Background" Value="White"/>
-                            <Setter Property="BorderBrush" Value="#E5E7EB"/>
-                            <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
-
-                <StackPanel Grid.Row="4">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Border Style="{StaticResource Chip}">
-                            <TextBlock Text="{Binding Mode, StringFormat=Mode: {0}}"/>
-                        </Border>
-                        <Border Style="{StaticResource Chip}" Margin="8,0,0,0">
-                            <TextBlock Text="{Binding IsBusy, StringFormat=Busy: {0}}"/>
-                        </Border>
-                    </StackPanel>
-
-                    <Button Content="Load / Refresh"
-                            Command="{Binding LoadCommand}"
-                            IsEnabled="{Binding IsBusy, Converter={StaticResource BoolToVis}, ConverterParameter=False}"/>
-
-                    <Button Margin="0,8,0,0"
-                            Style="{StaticResource GhostButton}"
-                            Content="Add current Symbol to Watchlist"
-                            Command="{Binding AddToWatchlistCommand}"/>
-
-                    <Button Margin="0,8,0,0"
-                            Style="{StaticResource GhostButton}"
-                            Content="Use BTC Address Example"
-                            Command="{Binding UseAddressExampleCommand}"/>
-
-                    <Border Margin="0,12,0,0"
-                            Background="#FEF2F2"
-                            BorderBrush="#FECACA"
-                            BorderThickness="1"
-                            CornerRadius="10"
-                            Padding="10"
-                            Visibility="{Binding Error, Converter={StaticResource StringToVisibilityConverter}}">
-                        <TextBlock Text="{Binding Error}" Foreground="#B91C1C" TextWrapping="Wrap"/>
-                    </Border>
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- RIGHT CARD -->
-        <Border Grid.Column="2" Style="{StaticResource CardBorder}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="12"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="12"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- Header + mode -->
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel>
-                        <TextBlock Text="DIA Quotation" FontSize="18" FontWeight="SemiBold"/>
-                        <TextBlock Opacity="0.65" Text="Symbol oder Asset-Adresse abfragen (DIA API)"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="Mode:" VerticalAlignment="Center" Margin="0,0,8,0" Opacity="0.7"/>
-
-                        <RadioButton Content="Symbol"
-                                     Margin="0,0,10,0"
-                                     IsChecked="{Binding Mode, Mode=TwoWay,
-                                                 Converter={StaticResource StringEqualsToBoolConverter},
-                                                 ConverterParameter=Symbol}"/>
-
-                        <RadioButton Content="Address"
-                                     IsChecked="{Binding Mode, Mode=TwoWay,
-                                                 Converter={StaticResource StringEqualsToBoolConverter},
-                                                 ConverterParameter=Address}"/>
-                    </StackPanel>
-                </Grid>
-
-                <!-- Inputs -->
-                <Border Grid.Row="2" Background="#FAFAFF" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="12" Padding="12">
+                <!-- Auto Refresh -->
+                <Border Grid.Row="2" Background="#FAFAFF" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="14" Padding="12">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="10"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="10"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Symbol row -->
-                        <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="Symbol"/>
-                        <TextBox Grid.Row="0" Grid.Column="1"
-                                 Text="{Binding Symbol, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Mode}" Value="Address">
-                                            <Setter Property="IsEnabled" Value="False"/>
-                                            <Setter Property="Opacity" Value="0.55"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                        <StackPanel>
+                            <TextBlock Text="Auto Update" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding AutoRefreshStatusText}" Opacity="0.7" Margin="0,2,0,0"/>
+                        </StackPanel>
 
-                        <!-- Address rows -->
-                        <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="Blockchain"/>
-                        <TextBox Grid.Row="2" Grid.Column="1"
-                                 Text="{Binding Blockchain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Setter Property="Opacity" Value="0.55"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Mode}" Value="Address">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                            <Setter Property="Opacity" Value="1"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
-
-                        <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="Asset Address"/>
-                        <TextBox Grid.Row="4" Grid.Column="1"
-                                 Text="{Binding AssetAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Setter Property="Opacity" Value="0.55"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Mode}" Value="Address">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                            <Setter Property="Opacity" Value="1"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <CheckBox Content="On"
+                                      IsChecked="{Binding IsAutoRefreshEnabled, Mode=TwoWay}"
+                                      Margin="0,0,10,0"/>
+                            <ComboBox Width="140"
+                                      ItemsSource="{Binding AutoRefreshIntervals}"
+                                      SelectedItem="{Binding SelectedAutoRefreshInterval, Mode=TwoWay}"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Quote result -->
-                <Border Grid.Row="4" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="12" Padding="12">
+                <!-- Watchlist -->
+                <Border Grid.Row="4" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="14" Padding="12">
                     <Grid>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="10"/>
                             <RowDefinition Height="*"/>
@@ -286,71 +92,105 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="Result" FontSize="16" FontWeight="SemiBold"/>
+                            <StackPanel>
+                                <TextBlock Text="Watchlist" FontWeight="SemiBold"/>
+                                <TextBlock Text="Double-click → load quotation" Opacity="0.65"/>
+                            </StackPanel>
 
-                            <ProgressBar Grid.Column="1"
-                                         Width="140" Height="10"
-                                         IsIndeterminate="True"
-                                         Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"
-                                         VerticalAlignment="Center"/>
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource GhostButton}"
+                                    Content="Add current"
+                                    Command="{Binding Quotation.AddToWatchlistCommand}"
+                                    Padding="10,8"/>
                         </Grid>
 
-                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                            <Grid Margin="0,2,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="170"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+                        <!-- Quick search in watchlist -->
+                        <TextBox Grid.Row="2"
+                                 Text="{Binding WatchlistSearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Search watchlist (e.g. BTC, ETH)"/>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelText}" Text="Symbol"/>
-                                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ValueText}" Text="{Binding Quote.Symbol}"/>
+                        <ListBox Grid.Row="4"
+                                 x:Name="WatchListBox"
+                                 ItemsSource="{Binding WatchlistView}"
+                                 SelectedItem="{Binding Quotation.Symbol, Mode=TwoWay}"
+                                 BorderBrush="#E5E7EB"
+                                 BorderThickness="1"
+                                 Padding="6"
+                                 Background="#FBFBFD">
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelText}" Text="Name" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource ValueText}" Text="{Binding Quote.Name}" Margin="0,8,0,0"/>
+                            <ListBox.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding Quotation.PickCommand}"
+                                              CommandParameter="{Binding SelectedItem, ElementName=WatchListBox}"/>
+                            </ListBox.InputBindings>
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="Blockchain" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource ValueText}" Text="{Binding Quote.Blockchain}" Margin="0,8,0,0"/>
-
-                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="Address" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource ValueText}" Text="{Binding Quote.Address}" Margin="0,8,0,0"/>
-
-                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="Price" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource ValueText}"
-                                           Text="{Binding Quote.Price, StringFormat={}{0:N8}}" Margin="0,8,0,0"/>
-
-                                <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="PriceYesterday" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="5" Grid.Column="1" Style="{StaticResource ValueText}"
-                                           Text="{Binding Quote.PriceYesterday, StringFormat={}{0:N8}}" Margin="0,8,0,0"/>
-
-                                <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="VolumeYesterday USD" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="6" Grid.Column="1" Style="{StaticResource ValueText}"
-                                           Text="{Binding Quote.VolumeYesterdayUSD, StringFormat={}{0:N2}}" Margin="0,8,0,0"/>
-
-                                <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelText}" Text="Time" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="7" Grid.Column="1" Style="{StaticResource ValueText}" Text="{Binding Quote.Time}" Margin="0,8,0,0"/>
-
-                                <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource LabelText}" Text="Source / Signature" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="8" Grid.Column="1" Style="{StaticResource ValueText}" Margin="0,8,0,0">
-                                    <Run Text="{Binding Quote.Source}"/>
-                                    <LineBreak/>
-                                    <Run Text="{Binding Quote.Signature}"/>
-                                </TextBlock>
-                            </Grid>
-                        </ScrollViewer>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="10,8"/>
+                                    <Setter Property="Margin" Value="0,0,0,6"/>
+                                    <Setter Property="Background" Value="White"/>
+                                    <Setter Property="BorderBrush" Value="#E5E7EB"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
                     </Grid>
                 </Border>
+
+                <!-- Footer actions -->
+                <StackPanel Grid.Row="6">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Border Style="{StaticResource Chip}">
+                            <TextBlock Text="{Binding StatusChipText}"/>
+                        </Border>
+                        <Border Style="{StaticResource Chip}" Margin="8,0,0,0">
+                            <TextBlock Text="{Binding LastUpdateChipText}"/>
+                        </Border>
+                    </StackPanel>
+
+                    <Button Style="{StaticResource PrimaryButton}"
+                            Content="Manual Update (Refresh all)"
+                            Command="{Binding RefreshAllCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvBool}}"/>
+
+                    <Button Margin="0,8,0,0"
+                            Style="{StaticResource GhostButton}"
+                            Content="Reload Meta (Blockchains / Exchanges)"
+                            Command="{Binding LoadMetaCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvBool}}"/>
+
+                    <Border Margin="0,12,0,0"
+                            Background="#FEF2F2"
+                            BorderBrush="#FECACA"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="10"
+                            Visibility="{Binding Error, Converter={StaticResource StringToVis}}">
+                        <TextBlock Text="{Binding Error}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"/>
+                    </Border>
+                </StackPanel>
             </Grid>
         </Border>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="360" MinHeight="300"/>
+                <RowDefinition Height="6"/>
+                <RowDefinition Height="*" MinHeight="250"/>
+            </Grid.RowDefinitions>
+
+            <controls:QuotationControl Grid.Row="0" DataContext="{Binding Quotation}"/>
+
+            <GridSplitter Grid.Row="1"
+                  Height="6"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Background="#E5E7EB"
+                  ShowsPreview="False"/>
+
+            <controls:QuotedAssetsControl Grid.Row="2" DataContext="{Binding QuotedAssets}"/>
+        </Grid>
+
     </Grid>
 </Window>

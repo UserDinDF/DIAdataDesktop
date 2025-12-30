@@ -1,0 +1,211 @@
+﻿<UserControl x:Class="DIAdataDesktop.Views.Controls.QuotedAssetsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Style="{StaticResource CardBorder}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="Quoted Assets" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock Opacity="0.65"
+                               Text="{Binding QuotedAssetsCount, StringFormat=Showing: {0}}"/>
+                </StackPanel>
+
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding Blockchains}"
+                          SelectedItem="{Binding SelectedBlockchain, Mode=TwoWay}"/>
+
+                <TextBox Grid.Column="3"
+                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         materialDesign:HintAssist.Hint="Search (symbol/name/address)"/>
+
+                <Button Grid.Column="5"
+                        Style="{StaticResource PrimaryButton}"
+                        Content="Load"
+                        Command="{Binding LoadQuotedAssetsCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvBool}}"/>
+            </Grid>
+
+            <!-- Meta lists (Blockchains + Exchanges) -->
+            <Border Grid.Row="2" Background="#FAFAFF" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="14" Padding="12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="Blockchains" FontWeight="SemiBold"/>
+                        <TextBox Margin="0,8,0,8"
+                                 Text="{Binding BlockchainSearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Search blockchains"/>
+                        <ListBox ItemsSource="{Binding BlockchainsView}" Height="120"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Exchanges" FontWeight="SemiBold"/>
+                        <TextBox Margin="0,8,0,8"
+                                 Text="{Binding ExchangeSearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Search exchanges"/>
+                        <ListBox ItemsSource="{Binding ExchangesView}"
+         Height="220"
+         BorderBrush="#E5E7EB"
+         BorderThickness="1"
+         Background="White"
+         Padding="6"
+         ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="10,8"/>
+                                    <Setter Property="Margin" Value="0,0,0,8"/>
+                                    <Setter Property="Background" Value="#FBFBFD"/>
+                                    <Setter Property="BorderBrush" Value="#E5E7EB"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- LEFT -->
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"/>
+
+                                                <!-- Type chip -->
+                                                <Border Margin="10,0,0,0" Padding="8,2"
+                                CornerRadius="999"
+                                Background="#EEF2FF" BorderBrush="#C7D2FE" BorderThickness="1">
+                                                    <TextBlock Text="{Binding Type}" FontSize="11" FontWeight="SemiBold"/>
+                                                </Border>
+
+                                                <!-- Active chip -->
+                                                <Border Margin="6,0,0,0"
+        Padding="8,2"
+        CornerRadius="999"
+        BorderThickness="1">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <!-- DEFAULT = inactive (leicht rot) -->
+                                                            <Setter Property="Background" Value="#FEF2F2"/>
+                                                            <Setter Property="BorderBrush" Value="#FECACA"/>
+
+                                                            <Style.Triggers>
+                                                                <!-- ACTIVE = grün -->
+                                                                <DataTrigger Binding="{Binding ScraperActive}" Value="True">
+                                                                    <Setter Property="Background" Value="#ECFDF5"/>
+                                                                    <Setter Property="BorderBrush" Value="#A7F3D0"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+
+                                                    <TextBlock FontSize="11">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="Inactive"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ScraperActive}" Value="True">
+                                                                        <Setter Property="Text" Value="Active"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Border>
+
+                                            </StackPanel>
+
+                                            <TextBlock Opacity="0.7" FontSize="11" Margin="0,4,0,0">
+                        <Run Text="Blockchain: "/>
+                        <Run Text="{Binding Blockchain}"/>
+                        <Run Text="   •   Pairs: "/>
+                        <Run Text="{Binding Pairs}"/>
+                        <Run Text="   •   Trades: "/>
+                        <Run Text="{Binding Trades}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <!-- RIGHT -->
+                                        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding Volume24h, StringFormat={}{0:N0}}"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Right"/>
+                                            <TextBlock Text="Volume 24h"
+                               FontSize="10"
+                               Opacity="0.6"
+                               HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Grid -->
+            <Grid Grid.Row="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="{Binding StatusText}" Opacity="0.75"/>
+
+                    <ProgressBar Grid.Column="1"
+                                 Width="180" Height="10"
+                                 IsIndeterminate="True"
+                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"
+                                 VerticalAlignment="Center"/>
+                </Grid>
+
+                <DataGrid Grid.Row="2"
+                          ItemsSource="{Binding QuotedAssetsView}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Symbol" Binding="{Binding Asset.Symbol}" Width="90"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Asset.Name}" Width="*"/>
+                        <DataGridTextColumn Header="Blockchain" Binding="{Binding Asset.Blockchain}" Width="140"/>
+                        <DataGridTextColumn Header="Decimals" Binding="{Binding Asset.Decimals}" Width="90"/>
+                        <DataGridTextColumn Header="Volume" Binding="{Binding Volume, StringFormat={}{0:N4}}" Width="140"/>
+                        <DataGridTextColumn Header="Volume USD" Binding="{Binding VolumeUSD, StringFormat={}{0:N2}}" Width="140"/>
+                        <DataGridTextColumn Header="Address" Binding="{Binding Asset.Address}" Width="360"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

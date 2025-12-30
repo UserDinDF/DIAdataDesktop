@@ -9,7 +9,7 @@ namespace DIAdataDesktop.Converters
 {
     public sealed class StringToVisibilityConverter : IValueConverter
     {
-        public bool Invert { get; set; } // optional
+        public bool Invert { get; set; } 
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

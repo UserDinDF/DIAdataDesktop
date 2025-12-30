@@ -1,7 +1,9 @@
 ﻿using DIAdataDesktop.Models;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,9 +21,6 @@ namespace DIAdataDesktop.Services
             _http.Timeout = TimeSpan.FromSeconds(10);
         }
 
-        /// <summary>
-        /// GET /quotation/{symbol}
-        /// </summary>
         public async Task<DiaQuotation> GetQuotationBySymbolAsync(string symbol, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(symbol))
@@ -35,10 +34,6 @@ namespace DIAdataDesktop.Services
             return quote ?? throw new InvalidOperationException("DIA API returned empty response.");
         }
 
-        /// <summary>
-        /// GET /assetQuotation/{blockchain}/{asset}
-        /// Example: /assetQuotation/Bitcoin/0x0000000000000000000000000000000000000000
-        /// </summary>
         public async Task<DiaQuotation> GetQuotationByAddressAsync(
             string blockchain,
             string assetAddress,
@@ -58,6 +53,38 @@ namespace DIAdataDesktop.Services
             var quote = await _http.GetFromJsonAsync<DiaQuotation>(path, ct);
 
             return quote ?? throw new InvalidOperationException("DIA API returned empty response.");
+        }
+
+        /// <summary>
+        /// GET /blockchains
+        /// </summary>
+        public async Task<List<string>> GetBlockchainsAsync(CancellationToken ct = default)
+        {
+            var list = await _http.GetFromJsonAsync<List<string>>("blockchains", ct);
+            return list ?? new List<string>();
+        }
+
+        /// <summary>
+        /// GET /exchanges
+        /// </summary>
+        public async Task<List<DiaExchange>> GetExchangesAsync(CancellationToken ct = default)
+        {
+            var list = await _http.GetFromJsonAsync<List<DiaExchange>>("exchanges", ct);
+            return list ?? new List<DiaExchange>();
+        }
+
+
+        /// <summary>
+        /// GET /quotedAssets?blockchain=Polygon
+        /// </summary>
+        public async Task<List<DiaQuotedAsset>> GetQuotedAssetsAsync(string? blockchain = null, CancellationToken ct = default)
+        {
+            var path = "quotedAssets";
+            if (!string.IsNullOrWhiteSpace(blockchain))
+                path += $"?blockchain={Uri.EscapeDataString(blockchain.Trim())}";
+
+            var list = await _http.GetFromJsonAsync<List<DiaQuotedAsset>>(path, ct);
+            return list ?? new List<DiaQuotedAsset>();
         }
     }
 }
