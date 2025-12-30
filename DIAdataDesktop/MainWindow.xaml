@@ -19,7 +19,6 @@
     </Window.DataContext>
 
     <Window.Resources>
-        <!-- Converters -->
         <conv:InverseBooleanConverter x:Key="InvBool"/>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <conv:StringToVisibilityConverter x:Key="StringToVis"/>
@@ -33,7 +32,6 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- LEFT SIDEBAR -->
         <Border Grid.Column="0"
                 Background="{StaticResource SidebarBg}"
                 BorderBrush="{StaticResource SidebarStroke}"
@@ -41,7 +39,6 @@
 
             <DockPanel LastChildFill="True" Margin="16">
 
-                <!-- Brand -->
                 <StackPanel DockPanel.Dock="Top" Margin="0,6,0,14">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -67,13 +64,11 @@
                     </Grid>
                 </StackPanel>
 
-                <!-- Menu -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
 
                         <TextBlock Style="{StaticResource SidebarSectionHeader}" Text="Data library"/>
 
-                        <!-- Data library (like DIA website) -->
                         <ToggleButton Style="{StaticResource SidebarMenuItem}"
                                       Tag="DataLibrary"
                                       Click="Nav_Click"
@@ -88,7 +83,6 @@
                             </Grid>
                         </ToggleButton>
 
-                        <!-- Sub items (simple) -->
                         <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
                                       Tag="DigitalAssets"
                                       Click="Nav_Click"
@@ -178,30 +172,24 @@
                         <TextBlock Style="{StaticResource SidebarSectionHeader}" Text="Tools"/>
 
                         <ToggleButton Style="{StaticResource SidebarMenuItem}"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Staking}"
-                                      Command="{Binding NavigateCommand}" CommandParameter="Staking">
+              Click="OpenWatchlistWidget_Click">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="26"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="▽" Opacity="0.9" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Staking" FontWeight="SemiBold"/>
+
+                                <TextBlock Grid.Column="0" Text="⌁" Opacity="0.9" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Watchlist widget" FontWeight="SemiBold"/>
+
+                                <Border Grid.Column="2" Margin="8,0,0,0" Padding="8,2"
+                CornerRadius="999" Background="#0F234A" BorderBrush="#2D64E3" BorderThickness="1">
+                                    <TextBlock Text="POPUP" FontSize="11" Foreground="#B6D4FF"/>
+                                </Border>
                             </Grid>
                         </ToggleButton>
 
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Bridge}"
-                                      Command="{Binding NavigateCommand}" CommandParameter="Bridge">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="⇄" Opacity="0.9" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Bridge" FontWeight="SemiBold"/>
-                            </Grid>
-                        </ToggleButton>
                         <Border DockPanel.Dock="Bottom" Margin="0,14,0,0"
              Background="#0C1A33"
              BorderBrush="{StaticResource SidebarStroke}"
@@ -225,7 +213,6 @@
             </DockPanel>
         </Border>
 
-        <!-- splitter between sidebar and content -->
         <GridSplitter Grid.Column="1"
                       Width="12"
                       Background="#0B1220"
@@ -233,7 +220,6 @@
                       VerticalAlignment="Stretch"
                       ShowsPreview="False"/>
 
-        <!-- RIGHT CONTENT -->
         <Grid Grid.Column="2" Margin="18">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -241,7 +227,6 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Top bar (optional, DIA-like) -->
             <Border Grid.Row="0"
                     Background="{StaticResource ContentCardBg}"
                     BorderBrush="{StaticResource ContentStroke}"
@@ -261,7 +246,6 @@
                         <TextBlock Text="Quotation, quoted assets, meta lists" Foreground="#9CA3AF" Margin="0,2,0,0"/>
                     </StackPanel>
 
-                    <!-- Quick search could later bind to a global search -->
                     <TextBox Grid.Column="1"
                              Margin="0"
                              VerticalAlignment="Center"

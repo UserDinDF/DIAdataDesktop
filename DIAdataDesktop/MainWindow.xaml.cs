@@ -1,4 +1,5 @@
 ﻿using DIAdataDesktop.ViewModels;
+using DIAdataDesktop.Views;
 using DIAdataDesktop.Views.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ namespace DIAdataDesktop
     {
         private readonly MainViewModel _vm;
 
-        // ✅ Cache: pro Key genau 1 UIElement (State bleibt)
         private readonly Dictionary<string, UIElement> _pageCache = new();
+        private WatchlistWidgetWindow? _widgetWin;
 
         public MainWindow()
         {
@@ -25,7 +26,6 @@ namespace DIAdataDesktop
             _vm = App.Services.GetRequiredService<MainViewModel>();
             DataContext = _vm;
 
-            // Default: z.B. Quotation
             NavigateTo("Quotation");
         }
 
@@ -33,28 +33,20 @@ namespace DIAdataDesktop
         {
             if (sender is ToggleButton tb && tb.Tag is string key)
             {
-                _vm.SelectedNav = key;   // ✅ UI highlight
+                _vm.SelectedNav = key;  
                 NavigateTo(key);
             }
         }
 
         private async void NavigateTo(string key)
         {
-            //if (_pageCache.TryGetValue(key, out var cached))
-            //{
-            //    MainContent.Content = cached;
-            //}
-
             UIElement page = key switch
             {
-                // ✅ getrennt
                 "Quotation" => BuildQuotationPage(),
                 "QuotedAssets" => await BuildQuotedAssetsPage(),
 
-                // optional: DataLibrary Overview
                 "DataLibrary" => BuildPlaceholder("Data library", "Choose a module on the left."),
 
-                // rest
                 "DigitalAssets" => await BuildQuotedAssetsPage(),
                 "RealWorldAssets" => BuildPlaceholder("Real-world assets", "Coming soon..."),
                 "Randomness" => BuildPlaceholder("Randomness", "Coming soon..."),
@@ -74,14 +66,14 @@ namespace DIAdataDesktop
         private UIElement BuildQuotationPage()
         {
             var ctrl = App.Services.GetRequiredService<QuotationControl>();
-            ctrl.DataContext = _vm.Quotation;   // ✅ Child VM aus MainVM
+            ctrl.DataContext = _vm.Quotation;  
             return ctrl;
         }
 
         private async Task<UIElement> BuildQuotedAssetsPage()
         {
             var ctrl = App.Services.GetRequiredService<QuotedAssetsControl>();
-            ctrl.DataContext = _vm.QuotedAssets; // ✅ Child VM aus MainVM
+            ctrl.DataContext = _vm.QuotedAssets;
             await _vm.QuotedAssets.InitializeAsync();
             return ctrl;
         }
@@ -106,6 +98,28 @@ namespace DIAdataDesktop
                     }
                 }
             };
+        }
+
+        private void OpenWatchlistWidget_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel mainViewModel = this.DataContext as MainViewModel;
+            QuotedAssetsViewModel quotedAssetsView = mainViewModel.QuotedAssets;
+            if (_widgetWin is { IsVisible: true })
+            {
+                _widgetWin.Activate();
+                _widgetWin.Topmost = _widgetWin.Topmost; 
+                return;
+            }
+
+            var wvm = new WatchlistWidgetViewModel(quotedAssetsView);
+            
+            _widgetWin = new WatchlistWidgetWindow(wvm)
+            {
+                Owner = Window.GetWindow(this)
+            };
+            
+            _widgetWin.Show();
+            _widgetWin.Activate();
         }
     }
 }

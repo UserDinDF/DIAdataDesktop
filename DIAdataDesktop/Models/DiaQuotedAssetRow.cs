@@ -18,7 +18,6 @@ namespace DIAdataDesktop.Models
 
             Quotation = src.DiaQuotation;
 
-            // ensure not null + hook events
             CexPairs = new ObservableCollection<DiaCexPairsByAssetRow>();
             HookCexPairs(CexPairs);
             RecalcCexCounts();
@@ -28,6 +27,7 @@ namespace DIAdataDesktop.Models
         {
             get
             {
+                //to do save local
                 var sym = (Symbol ?? "").Trim().ToUpperInvariant();
                 if (string.IsNullOrWhiteSpace(sym)) return "";
                 return $"https://cms3.diadata.org/images/assets/{Uri.EscapeDataString(sym)}.png";
@@ -38,17 +38,15 @@ namespace DIAdataDesktop.Models
 
         [ObservableProperty] private DiaQuotation? quotation;
 
-        // (optional) if you still need it; otherwise remove
         [ObservableProperty] private DiaExchange? exchange;
 
-        // IMPORTANT: not null
         [ObservableProperty] private ObservableCollection<DiaCexPairsByAssetRow> cexPairs = new();
 
         [ObservableProperty] private double volume;
         [ObservableProperty] private double volumeUSD;
         [ObservableProperty] private int index;
 
-        // ✅ Counts as int
+        // Counts as int
         [ObservableProperty] private int cexPairsTotal;
         [ObservableProperty] private int cexPairsVerified;
         [ObservableProperty] private int cexExchangesCount;
@@ -61,6 +59,7 @@ namespace DIAdataDesktop.Models
         public double Price => Quotation?.Price ?? 0d;
         public DateTimeOffset Time => Quotation?.Time ?? default;
 
+
         partial void OnQuotationChanged(DiaQuotation? value)
         {
             OnPropertyChanged(nameof(Symbol));
@@ -69,7 +68,7 @@ namespace DIAdataDesktop.Models
             OnPropertyChanged(nameof(Blockchain));
             OnPropertyChanged(nameof(Price));
             OnPropertyChanged(nameof(Time));
-            OnPropertyChanged(nameof(IconUrl)); // ✅
+            OnPropertyChanged(nameof(IconUrl)); 
         }
 
         partial void OnAssetChanged(DiaAsset value)
@@ -78,12 +77,44 @@ namespace DIAdataDesktop.Models
             OnPropertyChanged(nameof(Name));
             OnPropertyChanged(nameof(Address));
             OnPropertyChanged(nameof(Blockchain));
-            OnPropertyChanged(nameof(IconUrl)); // ✅
+            OnPropertyChanged(nameof(IconUrl)); 
         }
+        // -----------------------------
+        public void UpdateFrom(DiaQuotedAsset src)
+        {
+            Volume = src.Volume;
+            VolumeUSD = src.VolumeUSD;
+            Index = src.Index;
+
+            Asset = src.DiaAsset ?? new DiaAsset();
+            Quotation = src.DiaQuotation;
+        }
+        public void UpdateQuotation(DiaQuotation? q)
+        {
+            Quotation = q;
+        }
+
+        public void SetCexPairs(System.Collections.Generic.IEnumerable<DiaCexPairsByAssetRow> pairs)
+        {
+            CexPairs.CollectionChanged -= CexPairs_CollectionChanged;
+            try
+            {
+                CexPairs.Clear();
+                foreach (var p in pairs)
+                    CexPairs.Add(p);
+            }
+            finally
+            {
+                CexPairs.CollectionChanged += CexPairs_CollectionChanged;
+            }
+
+            RecalcCexCounts();
+        }
+
+
 
         partial void OnCexPairsChanged(ObservableCollection<DiaCexPairsByAssetRow> value)
         {
-            // unhook old
             if (value == null)
             {
                 CexPairs = new ObservableCollection<DiaCexPairsByAssetRow>();
@@ -102,7 +133,6 @@ namespace DIAdataDesktop.Models
 
         private void CexPairs_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            // quick + safe
             RecalcCexCounts();
         }
 

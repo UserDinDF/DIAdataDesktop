@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DIAdataDesktop.Models;
+using DIAdataDesktop.ViewModels;
+using DIAdataDesktop.Views.Windows;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -11,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Button = System.Windows.Controls.Button;
 
 namespace DIAdataDesktop.Views.Controls
 {
@@ -51,6 +55,23 @@ namespace DIAdataDesktop.Views.Controls
         private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {
 
+        }
+
+
+        private void openInWindowBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn) return;
+            if (btn.DataContext is not DiaQuotedAssetRow row) return;
+
+            var vm = new TokenDetailsPopUpViewModel(row);
+
+            var win = new TokenDetailsPopUpWindow(vm)
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            win.Show();
+            win.Activate();
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using DIAdataDesktop.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -14,6 +16,12 @@ namespace DIAdataDesktop.Services
         private static readonly Uri BaseUri = new("https://api.diadata.org/v1/");
         private readonly HttpClient _http;
 
+        // optional: JSON options (falls API mal camelCase etc. liefert)
+        private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         public DiaApiClient(HttpClient? httpClient = null)
         {
             _http = httpClient ?? new HttpClient();
@@ -21,63 +29,119 @@ namespace DIAdataDesktop.Services
             _http.Timeout = TimeSpan.FromSeconds(10);
         }
 
+        // ✅ zentrale Stelle für JEDE GET-Anfrage
+        private async Task<T> GetJsonAsync<T>(string relativePath, CancellationToken ct)
+        {
+            var url = new Uri(_http.BaseAddress!, relativePath);
+
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                using var req = new HttpRequestMessage(HttpMethod.Get, relativePath);
+
+                using var resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct);
+                sw.Stop();
+
+                // Body immer lesen (auch bei Fehlern), damit du Details siehst
+                var body = await resp.Content.ReadAsStringAsync(ct);
+
+                if (!resp.IsSuccessStatusCode)
+                {
+                    // hier hast du jetzt ALLES: URL, StatusCode, Body, Dauer
+                    throw new DiaApiException(
+                        message: $"DIA API call failed: {(int)resp.StatusCode} {resp.ReasonPhrase}",
+                        requestUrl: url.ToString(),
+                        statusCode: resp.StatusCode,
+                        responseBody: body,
+                        elapsedMs: sw.ElapsedMilliseconds);
+                }
+
+                if (string.IsNullOrWhiteSpace(body))
+                    throw new DiaApiException("DIA API returned empty body.", url.ToString(), resp.StatusCode, body, sw.ElapsedMilliseconds);
+
+                // deserialize
+                var result = JsonSerializer.Deserialize<T>(body, JsonOptions);
+                if (result == null)
+                    throw new DiaApiException("DIA API returned null JSON.", url.ToString(), resp.StatusCode, body, sw.ElapsedMilliseconds);
+
+                return result;
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                sw.Stop();
+                // normale Cancel (z.B. Debounce) -> optional still loggen
+                Debug.WriteLine($"[DIA API] CANCELED {url} after {sw.ElapsedMilliseconds}ms");
+                throw;
+            }
+            catch (HttpRequestException ex)
+            {
+                sw.Stop();
+                // ✅ hier findest du echte Netzwerkfehler (DNS, TLS, Connection reset, etc.)
+                Debug.WriteLine($"[DIA API] HttpRequestException on {url} after {sw.ElapsedMilliseconds}ms: {ex}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                Debug.WriteLine($"[DIA API] Exception on {url} after {sw.ElapsedMilliseconds}ms: {ex}");
+                throw;
+            }
+        }
+
+        // ✅ Eigene Exception mit Kontext
+        public sealed class DiaApiException : Exception
+        {
+            public string RequestUrl { get; }
+            public HttpStatusCode StatusCode { get; }
+            public string ResponseBody { get; }
+            public long ElapsedMs { get; }
+
+            public DiaApiException(string message, string requestUrl, HttpStatusCode statusCode, string responseBody, long elapsedMs, Exception? inner = null)
+                : base($"{message}\nURL: {requestUrl}\nStatus: {(int)statusCode} {statusCode}\nElapsed: {elapsedMs}ms\nBody: {Trim(responseBody, 1200)}", inner)
+            {
+                RequestUrl = requestUrl;
+                StatusCode = statusCode;
+                ResponseBody = responseBody;
+                ElapsedMs = elapsedMs;
+            }
+
+            private static string Trim(string s, int max)
+                => string.IsNullOrEmpty(s) ? "" : (s.Length <= max ? s : s.Substring(0, max) + "…");
+        }
+
+        // -------- API methods (jetzt alle über GetJsonAsync) --------
+
         public async Task<DiaQuotation> GetQuotationBySymbolAsync(string symbol, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(symbol))
                 throw new ArgumentException("symbol is null/empty.", nameof(symbol));
 
             symbol = symbol.Trim().ToUpperInvariant();
-
-            var quote = await _http.GetFromJsonAsync<DiaQuotation>(
-                $"quotation/{Uri.EscapeDataString(symbol)}", ct);
-
-            return quote ?? throw new InvalidOperationException("DIA API returned empty response.");
+            return await GetJsonAsync<DiaQuotation>($"quotation/{Uri.EscapeDataString(symbol)}", ct);
         }
 
-        public async Task<DiaQuotation> GetQuotationByAddressAsync(
-            string blockchain,
-            string assetAddress,
-            CancellationToken ct = default)
+        public async Task<DiaQuotation> GetQuotationByAddressAsync(string blockchain, string assetAddress, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(blockchain))
                 throw new ArgumentException("blockchain is null/empty.", nameof(blockchain));
             if (string.IsNullOrWhiteSpace(assetAddress))
                 throw new ArgumentException("assetAddress is null/empty.", nameof(assetAddress));
 
-            blockchain = blockchain.Trim();
-            assetAddress = assetAddress.Trim();
-
-            var path =
-                $"assetQuotation/{Uri.EscapeDataString(blockchain)}/{Uri.EscapeDataString(assetAddress)}";
-
-            var quote = await _http.GetFromJsonAsync<DiaQuotation>(path, ct);
-
-            return quote ?? throw new InvalidOperationException("DIA API returned empty response.");
+            var path = $"assetQuotation/{Uri.EscapeDataString(blockchain.Trim())}/{Uri.EscapeDataString(assetAddress.Trim())}";
+            return await GetJsonAsync<DiaQuotation>(path, ct);
         }
 
-        /// <summary>
-        /// GET /blockchains
-        /// </summary>
         public async Task<List<string>> GetBlockchainsAsync(CancellationToken ct = default)
-        {
-            var list = await _http.GetFromJsonAsync<List<string>>("blockchains", ct);
-            return list ?? new List<string>();
-        }
+            => await GetJsonAsync<List<string>>("blockchains", ct);
 
-        /// <summary>
-        /// GET /exchanges
-        /// </summary>
         public async Task<List<DiaExchange>> GetExchangesAsync(CancellationToken ct = default)
-        {
-            var list = await _http.GetFromJsonAsync<List<DiaExchange>>("exchanges", ct);
-            return list ?? new List<DiaExchange>();
-        }
+            => await GetJsonAsync<List<DiaExchange>>("exchanges", ct);
 
         public async Task<List<DiaCexPairsByAssetRow>> GetPairsAssetCexAsync(
-          string blockchain,
-          string address,
-          bool? verified = null,
-          CancellationToken ct = default)
+            string blockchain,
+            string address,
+            bool? verified = null,
+            CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(blockchain))
                 throw new ArgumentException("blockchain is null/empty.", nameof(blockchain));
@@ -85,25 +149,19 @@ namespace DIAdataDesktop.Services
                 throw new ArgumentException("address is null/empty.", nameof(address));
 
             var path = $"pairsAssetCex/{Uri.EscapeDataString(blockchain.Trim())}/{Uri.EscapeDataString(address.Trim())}";
-
             if (verified.HasValue)
                 path += $"?verified={(verified.Value ? "true" : "false")}";
 
-            var list = await _http.GetFromJsonAsync<List<DiaCexPairsByAssetRow>>(path, ct);
-            return list ?? new List<DiaCexPairsByAssetRow>();
+            return await GetJsonAsync<List<DiaCexPairsByAssetRow>>(path, ct);
         }
 
-        /// <summary>
-        /// GET /quotedAssets?blockchain=Polygon
-        /// </summary>
         public async Task<List<DiaQuotedAsset>> GetQuotedAssetsAsync(string? blockchain = null, CancellationToken ct = default)
         {
             var path = "quotedAssets";
             if (!string.IsNullOrWhiteSpace(blockchain))
                 path += $"?blockchain={Uri.EscapeDataString(blockchain.Trim())}";
 
-            var list = await _http.GetFromJsonAsync<List<DiaQuotedAsset>>(path, ct);
-            return list ?? new List<DiaQuotedAsset>();
+            return await GetJsonAsync<List<DiaQuotedAsset>>(path, ct);
         }
     }
 }

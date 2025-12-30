@@ -8,8 +8,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
 
@@ -25,15 +23,28 @@ namespace DIAdataDesktop.ViewModels
         private CancellationTokenSource? _loadCts;
         private CancellationTokenSource? _reloadDebounceCts;
 
-        // ✅ ComboBox source
+        // Prefetch debounce + cancellation
+        private CancellationTokenSource? _prefetchCts;
+        private CancellationTokenSource? _prefetchDebounceCts;
+
+        // Caches (in-memory)
+        private readonly Dictionary<string, CacheEntry<DiaQuotation>> _quotationCache = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, CacheEntry<List<DiaCexPairsByAssetRow>>> _pairsCache = new(StringComparer.OrdinalIgnoreCase);
+
+        // TTLs (tune)
+        private readonly TimeSpan _quotationTtl = TimeSpan.FromSeconds(20);
+        private readonly TimeSpan _pairsTtl = TimeSpan.FromMinutes(10);
+
+        private readonly object _cacheLock = new();
+
+        // ComboBox source
         public ObservableCollection<string> Blockchains { get; } = new() { "(All)" };
 
-
-        // ✅ Alles / Gefiltert (UI-thread only)
+        // Alles / Gefiltert (UI-thread only)
         private readonly List<DiaQuotedAssetRow> _allRows = new();
         private List<DiaQuotedAssetRow> _filteredRows = new();
 
-        // ✅ Seite (UI bindet hier)
+        // Seite (UI bindet hier)
         public ObservableCollection<DiaQuotedAssetRow> PagedRows { get; } = new();
 
         [ObservableProperty] private string selectedBlockchain = "(All)";
@@ -52,8 +63,7 @@ namespace DIAdataDesktop.ViewModels
         [ObservableProperty] private bool isBusy;
         [ObservableProperty] private string? error;
 
-        // Quotation prefetch
-        [ObservableProperty] private int quotationPrefetchCount = 150;
+        // Prefetch tuning
         [ObservableProperty] private int quotationParallelism = 8;
 
         public QuotedAssetsViewModel(DiaApiClient api, Action<bool> setBusy, Action<string?> setError)
@@ -64,7 +74,72 @@ namespace DIAdataDesktop.ViewModels
             _ui = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
         }
 
-        // ✅ public init: lädt Blockchains aus API
+        private static string KeyOf(DiaQuotedAsset a) => $"{(a.Asset.Blockchain ?? "").Trim()}|{(a.Asset.Address ?? "").Trim()}".ToLowerInvariant();
+
+        private static string KeyOf(DiaQuotedAssetRow r) => $"{(r.Blockchain ?? "").Trim()}|{(r.Address ?? "").Trim()}".ToLowerInvariant();
+
+        private static string QuoteKey(string symbol) => (symbol ?? "").Trim().ToUpperInvariant();
+        private static string PairsKey(string blockchain, string address) => $"{(blockchain ?? "").Trim()}|{(address ?? "").Trim()}".ToLowerInvariant();
+
+        private sealed class CacheEntry<T>
+        {
+            public CacheEntry(T value, DateTimeOffset fetchedAt)
+            {
+                Value = value;
+                FetchedAt = fetchedAt;
+            }
+            public T Value { get; }
+            public DateTimeOffset FetchedAt { get; }
+        }
+
+        private bool TryGetQuotationCached(string symbol, out DiaQuotation quote)
+        {
+            quote = default!;
+            var key = QuoteKey(symbol);
+            var now = DateTimeOffset.UtcNow;
+
+            lock (_cacheLock)
+            {
+                if (_quotationCache.TryGetValue(key, out var e) && (now - e.FetchedAt) <= _quotationTtl)
+                {
+                    quote = e.Value;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void SetQuotationCache(string symbol, DiaQuotation quote)
+        {
+            var key = QuoteKey(symbol);
+            lock (_cacheLock)
+                _quotationCache[key] = new CacheEntry<DiaQuotation>(quote, DateTimeOffset.UtcNow);
+        }
+
+        private bool TryGetPairsCached(string blockchain, string address, out List<DiaCexPairsByAssetRow> pairs)
+        {
+            pairs = default!;
+            var key = PairsKey(blockchain, address);
+            var now = DateTimeOffset.UtcNow;
+
+            lock (_cacheLock)
+            {
+                if (_pairsCache.TryGetValue(key, out var e) && (now - e.FetchedAt) <= _pairsTtl)
+                {
+                    pairs = e.Value;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void SetPairsCache(string blockchain, string address, List<DiaCexPairsByAssetRow> pairs)
+        {
+            var key = PairsKey(blockchain, address);
+            lock (_cacheLock)
+                _pairsCache[key] = new CacheEntry<List<DiaCexPairsByAssetRow>>(pairs, DateTimeOffset.UtcNow);
+        }
+
         public async Task InitializeAsync(CancellationToken ct = default)
         {
             try
@@ -111,11 +186,11 @@ namespace DIAdataDesktop.ViewModels
         {
             CurrentPage = 1;
             ApplyFilterAndPagingUiSafe();
+            DebouncedPrefetchVisible();
         }
 
         partial void OnSelectedBlockchainChanged(string value)
         {
-            // ✅ Wenn Blockchain wirklich gewechselt wurde: server reload (debounced)
             DebouncedReload();
         }
 
@@ -141,6 +216,7 @@ namespace DIAdataDesktop.ViewModels
             if (value <= 0) PageSize = 30;
             CurrentPage = 1;
             ApplyFilterAndPagingUiSafe();
+            DebouncedPrefetchVisible();
         }
 
         partial void OnCurrentPageChanged(int value)
@@ -148,6 +224,8 @@ namespace DIAdataDesktop.ViewModels
             ApplyPagingUiSafe();
             NextPageCommand.NotifyCanExecuteChanged();
             PrevPageCommand.NotifyCanExecuteChanged();
+
+            DebouncedPrefetchVisible();
         }
 
         private void ApplyFilterAndPagingUiSafe()
@@ -175,7 +253,6 @@ namespace DIAdataDesktop.ViewModels
                 _ui.BeginInvoke((Action)ApplyPagingCore, DispatcherPriority.Background);
         }
 
-        // UI thread only
         private void ApplyFilterCore()
         {
             var q = (SearchText ?? "").Trim();
@@ -183,7 +260,6 @@ namespace DIAdataDesktop.ViewModels
 
             IEnumerable<DiaQuotedAssetRow> filtered = _allRows;
 
-            // ✅ lokale Filterung auf bereits geladene Rows (optional zusätzlich zu server-filter)
             if (!string.IsNullOrWhiteSpace(bc) && !string.Equals(bc, "(All)", StringComparison.OrdinalIgnoreCase))
             {
                 filtered = filtered.Where(r =>
@@ -209,7 +285,6 @@ namespace DIAdataDesktop.ViewModels
             if (CurrentPage < 1) CurrentPage = 1;
         }
 
-        // UI thread only
         private void ApplyPagingCore()
         {
             TotalPages = Math.Max(1, (int)Math.Ceiling(_filteredRows.Count / (double)PageSize));
@@ -237,11 +312,8 @@ namespace DIAdataDesktop.ViewModels
 
         private bool CanNext() => CurrentPage < TotalPages && !IsBusy;
 
-        [RelayCommand]
-        private void GoToFirst() => CurrentPage = 1;
-
-        [RelayCommand]
-        private void GoToLast() => CurrentPage = TotalPages;
+        [RelayCommand] private void GoToFirst() => CurrentPage = 1;
+        [RelayCommand] private void GoToLast() => CurrentPage = TotalPages;
 
         [RelayCommand]
         public async Task LoadQuotedAssetsAsync()
@@ -259,37 +331,25 @@ namespace DIAdataDesktop.ViewModels
                     _setError(null);
                 });
 
-                // ✅ SelectedBlockchain UI-sicher lesen
                 string? bc = await _ui.InvokeAsync(() => SelectedBlockchain);
                 if (string.Equals(bc, "(All)", StringComparison.OrdinalIgnoreCase))
                     bc = null;
 
-                // ✅ API call (server-side filter)
                 var list = await _api.GetQuotedAssetsAsync(bc, ct);
-           
-
                 var ordered = list.OrderByDescending(x => x.Volume).ToList();
 
                 await _ui.InvokeAsync(() =>
                 {
-                    _allRows.Clear();
-                    foreach (var item in ordered)
-                        _allRows.Add(new DiaQuotedAssetRow(item));
+                    MergeAllRows(ordered);
 
                     CurrentPage = 1;
                     ApplyFilterCore();
                     ApplyPagingCore();
 
-                    StatusText = $"Loaded {TotalCount} assets. Showing page {CurrentPage}/{TotalPages}. Prefetching quotations...";
+                    StatusText = $"Loaded {TotalCount} assets. Showing page {CurrentPage}/{TotalPages}.";
                 });
 
-                // Prefetch top N
-                await PrefetchTopQuotationsAsync(topN: QuotationPrefetchCount, ct: ct);
-
-                await _ui.InvokeAsync(() =>
-                {
-                    StatusText = $"Ready. Page {CurrentPage}/{TotalPages}. (Quotations prefetched: {QuotationPrefetchCount})";
-                });
+                DebouncedPrefetchVisible();
             }
             catch (OperationCanceledException)
             {
@@ -314,11 +374,62 @@ namespace DIAdataDesktop.ViewModels
             }
         }
 
-        private async Task PrefetchTopQuotationsAsync(int topN, CancellationToken ct)
+        private void MergeAllRows(List<DiaQuotedAsset> ordered)
         {
-            if (topN <= 0) return;
+            var map = new Dictionary<string, DiaQuotedAssetRow>();
 
-            var rows = await _ui.InvokeAsync(() => _allRows.Take(Math.Min(topN, _allRows.Count)).ToList());
+            foreach (var r in _allRows)
+            {
+                var key = KeyOf(r);
+                if (!map.ContainsKey(key))
+                    map[key] = r;
+            }
+
+            foreach (var a in ordered)
+            {
+                var key = KeyOf(a);
+                if (map.TryGetValue(key, out var existing))
+                {
+                    existing.UpdateFrom(a);
+                }
+                else
+                {
+                    var row = new DiaQuotedAssetRow(a);
+                    _allRows.Add(row);
+                    map[key] = row;
+                }
+            }
+
+            var alive = new HashSet<string>(ordered.Select(KeyOf));
+            _allRows.RemoveAll(r => !alive.Contains(KeyOf(r)));
+
+            _allRows.Sort((x, y) => y.Volume.CompareTo(x.Volume));
+        }
+
+        private void DebouncedPrefetchVisible(int ms = 200)
+        {
+            _prefetchDebounceCts?.Cancel();
+            _prefetchDebounceCts = new CancellationTokenSource();
+            var token = _prefetchDebounceCts.Token;
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(ms, token);
+                    await PrefetchVisiblePageAsync();
+                }
+                catch (OperationCanceledException) { }
+            });
+        }
+
+        private async Task PrefetchVisiblePageAsync()
+        {
+            _prefetchCts?.Cancel();
+            _prefetchCts = new CancellationTokenSource();
+            var ct = _prefetchCts.Token;
+
+            var rows = await _ui.InvokeAsync(() => PagedRows.ToList());
             if (rows.Count == 0) return;
 
             using var sem = new SemaphoreSlim(Math.Max(1, QuotationParallelism));
@@ -328,17 +439,43 @@ namespace DIAdataDesktop.ViewModels
                 await sem.WaitAsync(ct);
                 try
                 {
-                    var sym = row.Asset?.Symbol;
+                    var sym = row.Symbol; 
                     if (string.IsNullOrWhiteSpace(sym)) return;
 
-                    var q = await _api.GetQuotationBySymbolAsync(sym, ct);
-                    var ex =  await _api.GetPairsAssetCexAsync(q.Blockchain, q.Address);
-                   
+                    DiaQuotation quote;
+                    if (!TryGetQuotationCached(sym, out quote))
+                    {
+                        quote = await _api.GetQuotationBySymbolAsync(sym, ct);
+                        SetQuotationCache(sym, quote);
+                    }
+
+                    List<DiaCexPairsByAssetRow>? pairs = null;
+                    if (!TryGetPairsCached(quote.Blockchain, quote.Address, out var cachedPairs))
+                    {
+                        if (row.CexPairs == null || row.CexPairs.Count == 0)
+                        {
+                            pairs = await _api.GetPairsAssetCexAsync(quote.Blockchain, quote.Address, ct: ct);
+                            SetPairsCache(quote.Blockchain, quote.Address, pairs);
+                        }
+                    }
+                    else
+                    {
+                        if (row.CexPairs == null || row.CexPairs.Count == 0)
+                            pairs = cachedPairs;
+                    }
+
                     await _ui.InvokeAsync(() =>
                     {
-                        row.Quotation = q;
-                        row.CexPairs = new ObservableCollection<DiaCexPairsByAssetRow>(ex);
-                        row.RecalcCexCounts();
+                        row.UpdateQuotation(quote);
+
+                        if (pairs != null)
+                        {
+                            row.CexPairs.Clear();
+                            foreach (var p in pairs)
+                                row.CexPairs.Add(p);
+
+                            row.RecalcCexCounts();
+                        }
                     }, DispatcherPriority.Background);
                 }
                 finally

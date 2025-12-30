@@ -74,7 +74,10 @@ namespace DIAdataDesktop.ViewModels
                 _lastUpdated = DateTimeOffset.Now;
                 OnPropertyChanged(nameof(LastUpdatedText));
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) 
+            { 
+
+            }
             catch (Exception ex)
             {
                 _setError(ex.Message);
