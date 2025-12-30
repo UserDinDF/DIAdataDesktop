@@ -35,6 +35,11 @@ namespace DIAdataDesktop.ViewModels
             ? $"Updated: {_lastUpdated:yyyy-MM-dd HH:mm:ss}"
             : "Updated: -";
 
+        public QuotationViewModel()
+        {
+
+        }
+
         public QuotationViewModel(DiaApiClient api, Action<bool> setBusy, Action<string?> setError)
         {
             _api = api;

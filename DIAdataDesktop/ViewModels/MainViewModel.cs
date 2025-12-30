@@ -47,7 +47,8 @@ namespace DIAdataDesktop.ViewModels
 
         [ObservableProperty] private string selectedAutoRefreshInterval = "30s";
         [ObservableProperty] private bool isAutoRefreshEnabled = true;
-
+        [ObservableProperty] private string selectedNav = "Quotation";
+        
         public string AutoRefreshStatusText
             => IsAutoRefreshEnabled && SelectedAutoRefreshInterval != "Off"
                 ? $"Running every {SelectedAutoRefreshInterval}"
@@ -75,7 +76,6 @@ namespace DIAdataDesktop.ViewModels
 
             ApplyTimerSettings();
 
-            _ = LoadMetaAsync();
             _ = RefreshAllAsync();
         }
 
@@ -135,7 +135,7 @@ namespace DIAdataDesktop.ViewModels
 
                 await Quotation.LoadQuotationAsync();
 
-                await QuotedAssets.LoadQuotedAssetsAsync(CancellationToken.None);
+                await QuotedAssets.LoadQuotedAssetsAsync();
 
                 LastUpdate = DateTimeOffset.Now;
             }
@@ -157,10 +157,10 @@ namespace DIAdataDesktop.ViewModels
                 SetBusyFromShell(true);
                 Error = null;
 
-                var chains = await _api.GetBlockchainsAsync(CancellationToken.None);
-                var exchanges = await _api.GetExchangesAsync(CancellationToken.None);
+               // var chains = await _api.GetBlockchainsAsync(CancellationToken.None);
+                //var exchanges = await _api.GetExchangesAsync(CancellationToken.None);
 
-                QuotedAssets.SetMeta(chains, exchanges);
+             //  QuotedAssets.SetMeta(chains);
             }
             catch (Exception ex)
             {

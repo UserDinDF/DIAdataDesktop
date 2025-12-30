@@ -5,11 +5,11 @@ using DIAdataDesktop.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Data;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace DIAdataDesktop.ViewModels
 {
@@ -18,180 +18,330 @@ namespace DIAdataDesktop.ViewModels
         private readonly DiaApiClient _api;
         private readonly Action<bool> _setBusy;
         private readonly Action<string?> _setError;
+        private readonly Dispatcher _ui;
 
-        public ObservableCollection<string> Blockchains { get; } = new();
-        public ObservableCollection<DiaExchange> Exchanges { get; } = new();
+        private CancellationTokenSource? _loadCts;
+        private CancellationTokenSource? _reloadDebounceCts;
+
+        // ✅ ComboBox source
+        public ObservableCollection<string> Blockchains { get; } = new() { "(All)" };
+
+
+        // ✅ Alles / Gefiltert (UI-thread only)
+        private readonly List<DiaQuotedAssetRow> _allRows = new();
+        private List<DiaQuotedAssetRow> _filteredRows = new();
+
+        // ✅ Seite (UI bindet hier)
+        public ObservableCollection<DiaQuotedAssetRow> PagedRows { get; } = new();
 
         [ObservableProperty] private string selectedBlockchain = "(All)";
-        public ObservableCollection<DiaQuotedAsset> QuotedAssets { get; } = new();
-
         [ObservableProperty] private string searchText = "";
-        [ObservableProperty] private string blockchainSearch = "";
-        [ObservableProperty] private string exchangeSearch = "";
         [ObservableProperty] private string statusText = "Ready";
 
-        [ObservableProperty] private int quotedAssetsCount;
+        // Paging
+        [ObservableProperty] private int pageSize = 30;
+        [ObservableProperty] private int currentPage = 1;
+        [ObservableProperty] private int totalPages = 1;
+
+        // Counts
+        [ObservableProperty] private int totalCount;
+        [ObservableProperty] private int filteredCount;
+
         [ObservableProperty] private bool isBusy;
         [ObservableProperty] private string? error;
 
-        public ICollectionView BlockchainsView { get; }
-        public ICollectionView ExchangesView { get; }
-        public ICollectionView QuotedAssetsView { get; }
+        // Quotation prefetch
+        [ObservableProperty] private int quotationPrefetchCount = 150;
+        [ObservableProperty] private int quotationParallelism = 8;
 
         public QuotedAssetsViewModel(DiaApiClient api, Action<bool> setBusy, Action<string?> setError)
         {
             _api = api;
             _setBusy = setBusy;
             _setError = setError;
-
-            Blockchains.Add("(All)");
-
-            BlockchainsView = CollectionViewSource.GetDefaultView(Blockchains);
-            ExchangesView = CollectionViewSource.GetDefaultView(Exchanges);
-            QuotedAssetsView = CollectionViewSource.GetDefaultView(QuotedAssets);
-
-            BlockchainsView.Filter = o =>
-            {
-                if (o is not string s) return false;
-                if (string.IsNullOrWhiteSpace(BlockchainSearch)) return true;
-                return s.IndexOf(BlockchainSearch.Trim(), StringComparison.OrdinalIgnoreCase) >= 0;
-            };
-
-            ExchangesView.Filter = o =>
-            {
-                if (o is not DiaExchange ex) return false;
-
-                if (string.IsNullOrWhiteSpace(ExchangeSearch))
-                    return true;
-
-                var q = ExchangeSearch.Trim();
-                return (ex.Name ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
-                    || (ex.Type ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
-                    || (ex.Blockchain ?? "").Contains(q, StringComparison.OrdinalIgnoreCase);
-            };
-
-            QuotedAssetsView.Filter = o =>
-            {
-                if (o is not DiaQuotedAsset qa) return false;
-                if (string.IsNullOrWhiteSpace(SearchText)) return true;
-
-                var q = SearchText.Trim();
-                var sym = qa.Asset?.Symbol ?? "";
-                var name = qa.Asset?.Name ?? "";
-                var addr = qa.Asset?.Address ?? "";
-
-                return sym.Contains(q, StringComparison.OrdinalIgnoreCase)
-                    || name.Contains(q, StringComparison.OrdinalIgnoreCase)
-                    || addr.Contains(q, StringComparison.OrdinalIgnoreCase);
-            };
+            _ui = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
         }
 
-        partial void OnBlockchainSearchChanged(string value) => BlockchainsView.Refresh();
-        partial void OnExchangeSearchChanged(string value) => ExchangesView.Refresh();
+        // ✅ public init: lädt Blockchains aus API
+        public async Task InitializeAsync(CancellationToken ct = default)
+        {
+            try
+            {
+                await _ui.InvokeAsync(() =>
+                {
+                    StatusText = "Loading blockchains...";
+                    _setError(null);
+                });
+
+                var blockhains = await _api.GetBlockchainsAsync(ct);
+
+                await _ui.InvokeAsync(() =>
+                {
+                    Blockchains.Clear();
+                    Blockchains.Add("(All)");
+
+                    foreach (var b in blockhains
+                        .Where(x => !string.IsNullOrWhiteSpace(x))
+                        .Select(x => x.Trim())
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+                    {
+                        Blockchains.Add(b);
+                    }
+
+                    if (!Blockchains.Contains(SelectedBlockchain))
+                        SelectedBlockchain = "(All)";
+
+                    StatusText = "Ready";
+                });
+            }
+            catch (Exception ex)
+            {
+                await _ui.InvokeAsync(() =>
+                {
+                    StatusText = "Meta load failed";
+                    _setError(ex.Message);
+                });
+            }
+        }
+
         partial void OnSearchTextChanged(string value)
         {
-            QuotedAssetsView.Refresh();
-            QuotedAssetsCount = QuotedAssetsView.Cast<object>().Count();
+            CurrentPage = 1;
+            ApplyFilterAndPagingUiSafe();
         }
 
-        public void SetMeta(IEnumerable<string> blockchains, IEnumerable<DiaExchange> exchanges)
+        partial void OnSelectedBlockchainChanged(string value)
         {
-            Blockchains.Clear();
-            Blockchains.Add("(All)");
-
-            foreach (var b in blockchains
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.Trim())
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
-            {
-                Blockchains.Add(b);
-            }
-
-            Exchanges.Clear();
-            foreach (var e in exchanges
-                .Where(x => !string.IsNullOrWhiteSpace(x?.Name))
-                .OrderByDescending(x => x.Volume24h))
-            {
-                Exchanges.Add(e);
-            }
-
-            BlockchainsView.Refresh();
-            ExchangesView.Refresh();
-
-            if (!Blockchains.Contains(SelectedBlockchain))
-                SelectedBlockchain = Blockchains.FirstOrDefault() ?? "(All)";
+            // ✅ Wenn Blockchain wirklich gewechselt wurde: server reload (debounced)
+            DebouncedReload();
         }
 
+        private void DebouncedReload(int ms = 250)
+        {
+            _reloadDebounceCts?.Cancel();
+            _reloadDebounceCts = new CancellationTokenSource();
+            var token = _reloadDebounceCts.Token;
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(ms, token);
+                    await LoadQuotedAssetsAsync();
+                }
+                catch (OperationCanceledException) { }
+            });
+        }
+
+        partial void OnPageSizeChanged(int value)
+        {
+            if (value <= 0) PageSize = 30;
+            CurrentPage = 1;
+            ApplyFilterAndPagingUiSafe();
+        }
+
+        partial void OnCurrentPageChanged(int value)
+        {
+            ApplyPagingUiSafe();
+            NextPageCommand.NotifyCanExecuteChanged();
+            PrevPageCommand.NotifyCanExecuteChanged();
+        }
+
+        private void ApplyFilterAndPagingUiSafe()
+        {
+            if (_ui.CheckAccess())
+            {
+                ApplyFilterCore();
+                ApplyPagingCore();
+            }
+            else
+            {
+                _ui.BeginInvoke((Action)(() =>
+                {
+                    ApplyFilterCore();
+                    ApplyPagingCore();
+                }), DispatcherPriority.Background);
+            }
+        }
+
+        private void ApplyPagingUiSafe()
+        {
+            if (_ui.CheckAccess())
+                ApplyPagingCore();
+            else
+                _ui.BeginInvoke((Action)ApplyPagingCore, DispatcherPriority.Background);
+        }
+
+        // UI thread only
+        private void ApplyFilterCore()
+        {
+            var q = (SearchText ?? "").Trim();
+            var bc = SelectedBlockchain;
+
+            IEnumerable<DiaQuotedAssetRow> filtered = _allRows;
+
+            // ✅ lokale Filterung auf bereits geladene Rows (optional zusätzlich zu server-filter)
+            if (!string.IsNullOrWhiteSpace(bc) && !string.Equals(bc, "(All)", StringComparison.OrdinalIgnoreCase))
+            {
+                filtered = filtered.Where(r =>
+                    (r.Blockchain ?? "").Equals(bc, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                filtered = filtered.Where(r =>
+                    (r.Symbol ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                    (r.Name ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                    (r.Address ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                    (r.Blockchain ?? "").Contains(q, StringComparison.OrdinalIgnoreCase));
+            }
+
+            _filteredRows = filtered.ToList();
+
+            TotalCount = _allRows.Count;
+            FilteredCount = _filteredRows.Count;
+
+            TotalPages = Math.Max(1, (int)Math.Ceiling(_filteredRows.Count / (double)PageSize));
+            if (CurrentPage > TotalPages) CurrentPage = TotalPages;
+            if (CurrentPage < 1) CurrentPage = 1;
+        }
+
+        // UI thread only
+        private void ApplyPagingCore()
+        {
+            TotalPages = Math.Max(1, (int)Math.Ceiling(_filteredRows.Count / (double)PageSize));
+            if (CurrentPage > TotalPages) CurrentPage = TotalPages;
+            if (CurrentPage < 1) CurrentPage = 1;
+
+            var skip = (CurrentPage - 1) * PageSize;
+            var page = _filteredRows.Skip(skip).Take(PageSize).ToList();
+
+            PagedRows.Clear();
+            foreach (var r in page)
+                PagedRows.Add(r);
+
+            NextPageCommand.NotifyCanExecuteChanged();
+            PrevPageCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanPrev))]
+        private void PrevPage() => CurrentPage--;
+
+        private bool CanPrev() => CurrentPage > 1 && !IsBusy;
+
+        [RelayCommand(CanExecute = nameof(CanNext))]
+        private void NextPage() => CurrentPage++;
+
+        private bool CanNext() => CurrentPage < TotalPages && !IsBusy;
 
         [RelayCommand]
-        private async Task LoadMetaAsync()
+        private void GoToFirst() => CurrentPage = 1;
+
+        [RelayCommand]
+        private void GoToLast() => CurrentPage = TotalPages;
+
+        [RelayCommand]
+        public async Task LoadQuotedAssetsAsync()
         {
+            _loadCts?.Cancel();
+            _loadCts = new CancellationTokenSource();
+            var ct = _loadCts.Token;
+
             try
             {
-                StatusText = "Loading meta...";
-                _setBusy(true);
-                _setError(null);
+                await _ui.InvokeAsync(() =>
+                {
+                    StatusText = "Loading assets list...";
+                    _setBusy(true);
+                    _setError(null);
+                });
 
-                var chains = await _api.GetBlockchainsAsync(CancellationToken.None);
-                var ex = await _api.GetExchangesAsync(CancellationToken.None);
-
-                SetMeta(chains, ex);
-
-                StatusText = $"Meta loaded: {Blockchains.Count - 1} blockchains, {Exchanges.Count} exchanges.";
-            }
-            catch (Exception ex2)
-            {
-                StatusText = "Meta load failed";
-                _setError(ex2.Message);
-            }
-            finally
-            {
-                _setBusy(false);
-            }
-        }
-
-
-        public async Task LoadQuotedAssetsAsync(CancellationToken ct)
-        {
-            try
-            {
-                StatusText = "Loading quoted assets...";
-                _setBusy(true);
-                _setError(null);
-
-                QuotedAssets.Clear();
-
-                string? bc = SelectedBlockchain;
+                // ✅ SelectedBlockchain UI-sicher lesen
+                string? bc = await _ui.InvokeAsync(() => SelectedBlockchain);
                 if (string.Equals(bc, "(All)", StringComparison.OrdinalIgnoreCase))
                     bc = null;
 
+                // ✅ API call (server-side filter)
                 var list = await _api.GetQuotedAssetsAsync(bc, ct);
 
-                foreach (var item in list.OrderByDescending(x => x.Volume))
-                    QuotedAssets.Add(item);
+                var ordered = list.OrderByDescending(x => x.Volume).ToList();
 
-                QuotedAssetsView.Refresh();
-                QuotedAssetsCount = QuotedAssetsView.Cast<object>().Count();
-                StatusText = $"Loaded {QuotedAssetsCount} assets.";
+                await _ui.InvokeAsync(() =>
+                {
+                    _allRows.Clear();
+                    foreach (var item in ordered)
+                        _allRows.Add(new DiaQuotedAssetRow(item));
+
+                    CurrentPage = 1;
+                    ApplyFilterCore();
+                    ApplyPagingCore();
+
+                    StatusText = $"Loaded {TotalCount} assets. Showing page {CurrentPage}/{TotalPages}. Prefetching quotations...";
+                });
+
+                // Prefetch top N
+                await PrefetchTopQuotationsAsync(topN: QuotationPrefetchCount, ct: ct);
+
+                await _ui.InvokeAsync(() =>
+                {
+                    StatusText = $"Ready. Page {CurrentPage}/{TotalPages}. (Quotations prefetched: {QuotationPrefetchCount})";
+                });
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+                await _ui.InvokeAsync(() => StatusText = "Canceled.");
+            }
             catch (Exception ex)
             {
-                StatusText = "Error";
-                _setError(ex.Message);
+                await _ui.InvokeAsync(() =>
+                {
+                    StatusText = "Error";
+                    _setError(ex.Message);
+                });
             }
             finally
             {
-                _setBusy(false);
+                await _ui.InvokeAsync(() =>
+                {
+                    _setBusy(false);
+                    PrevPageCommand.NotifyCanExecuteChanged();
+                    NextPageCommand.NotifyCanExecuteChanged();
+                });
             }
         }
 
-
-        [RelayCommand]
-        private async Task LoadQuotedAssetsAsync()
+        private async Task PrefetchTopQuotationsAsync(int topN, CancellationToken ct)
         {
-            await LoadQuotedAssetsAsync(CancellationToken.None);
+            if (topN <= 0) return;
+
+            var rows = await _ui.InvokeAsync(() => _allRows.Take(Math.Min(topN, _allRows.Count)).ToList());
+            if (rows.Count == 0) return;
+
+            using var sem = new SemaphoreSlim(Math.Max(1, QuotationParallelism));
+
+            var tasks = rows.Select(async row =>
+            {
+                await sem.WaitAsync(ct);
+                try
+                {
+                    var sym = row.Asset?.Symbol;
+                    if (string.IsNullOrWhiteSpace(sym)) return;
+
+                    var q = await _api.GetQuotationBySymbolAsync(sym, ct);
+
+                    await _ui.InvokeAsync(() =>
+                    {
+                        row.Quotation = q;
+                    }, DispatcherPriority.Background);
+                }
+                finally
+                {
+                    sem.Release();
+                }
+            }).ToArray();
+
+            await Task.WhenAll(tasks);
         }
     }
 }

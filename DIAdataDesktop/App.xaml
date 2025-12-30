@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:DIAdataDesktop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:converters="clr-namespace:DIAdataDesktop.Converters"
-             StartupUri="MainWindow.xaml">
+             xmlns:converters="clr-namespace:DIAdataDesktop.Converters">
     <Application.Resources>
         <ResourceDictionary>
 
@@ -13,7 +12,6 @@
             <converters:StringToVisibilityConverter x:Key="StringToVis"/>
             <converters:StringEqualsToBoolConverter x:Key="StringEqualsToBool"/>
 
-            <!-- Sidebar look -->
             <LinearGradientBrush x:Key="SidebarBg" StartPoint="0,0" EndPoint="0,1">
                 <GradientStop Color="#0A1630" Offset="0"/>
                 <GradientStop Color="#071225" Offset="1"/>
@@ -27,7 +25,146 @@
             <SolidColorBrush x:Key="MenuActiveBg" Color="#1C3B7A"/>
             <SolidColorBrush x:Key="MenuActiveStroke" Color="#2D64E3"/>
 
-            <!-- Menu item style (ToggleButton) -->
+
+            <Style x:Key="DarkNavButton" TargetType="Button" BasedOn="{x:Null}">
+                <Setter Property="Height" Value="34"/>
+                <Setter Property="MinWidth" Value="42"/>
+                <Setter Property="Padding" Value="12,0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Background" Value="#0B1220"/>
+                <Setter Property="Foreground" Value="#E5E7EB"/>
+                <Setter Property="BorderBrush" Value="#24314E"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="FontSize" Value="12.5"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="12"
+                            SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#111B35"/>
+                                    <Setter TargetName="bd" Property="BorderBrush" Value="#2D64E3"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="bd" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <ScaleTransform ScaleX="0.99" ScaleY="0.99"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="bd" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="bd" Property="Opacity" Value="0.45"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+        
+            <Style x:Key="DarkComboBox" TargetType="ComboBox" BasedOn="{x:Null}">
+                <Setter Property="Height" Value="34"/>
+                <Setter Property="Padding" Value="10,0"/>
+                <Setter Property="Background" Value="#0B1220"/>
+                <Setter Property="Foreground" Value="#E5E7EB"/>
+                <Setter Property="BorderBrush" Value="#24314E"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="FontSize" Value="12.5"/>
+                <Setter Property="IsEditable" Value="False"/>
+                <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBox">
+                            <Grid>
+                                <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="12"
+                            SnapsToDevicePixels="True"/>
+
+                                <DockPanel Margin="{TemplateBinding Padding}" HorizontalAlignment="Stretch">
+                                    <Border DockPanel.Dock="Right" Width="28" Background="Transparent">
+                                        <Path Data="M 0 0 L 4 4 L 8 0 Z"
+                                  Fill="#94A3B8"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <ContentPresenter Margin="2,0,0,0"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Left"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                          ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                                </DockPanel>
+
+                                <ToggleButton x:Name="PART_DropDownToggle" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                              Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ComboBox}}"
+              Focusable="False"
+              Background="Transparent"
+              BorderThickness="0"
+              ClickMode="Press"
+              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="Transparent"/>
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+
+
+                                <Popup x:Name="PART_Popup"
+                           Placement="Bottom"
+                           AllowsTransparency="True"
+                           Focusable="False"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           PopupAnimation="Fade">
+                                    <Border Background="#0B1220"
+                                BorderBrush="#24314E"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Margin="0,6,0,0"
+                                SnapsToDevicePixels="True">
+                                        <ScrollViewer Margin="6"
+                                          MaxHeight="320"
+                                          CanContentScroll="True">
+                                            <ItemsPresenter/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="BorderBrush" Value="#2D64E3"/>
+                                    <Setter TargetName="Bd" Property="Background" Value="#111B35"/>
+                                </Trigger>
+
+                                <Trigger Property="IsDropDownOpen" Value="True">
+                                    <Setter TargetName="Bd" Property="BorderBrush" Value="#2D64E3"/>
+                                    <Setter TargetName="Bd" Property="Background" Value="#111B35"/>
+                                </Trigger>
+
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Bd" Property="Opacity" Value="0.45"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <Style x:Key="SidebarMenuItem" TargetType="ToggleButton">
                 <Setter Property="Foreground" Value="{StaticResource SidebarText}"/>
                 <Setter Property="Background" Value="Transparent"/>
@@ -63,7 +200,6 @@
                 </Setter>
             </Style>
 
-            <!-- Small section header -->
             <Style x:Key="SidebarSectionHeader" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource SidebarTextMuted}"/>
                 <Setter Property="FontSize" Value="12"/>
@@ -71,7 +207,6 @@
                 <Setter Property="Margin" Value="0,18,0,8"/>
             </Style>
 
-            <!-- Content area background -->
             <SolidColorBrush x:Key="ContentBg" Color="#0B1220"/>
             <SolidColorBrush x:Key="ContentCardBg" Color="#0F1B33"/>
             <SolidColorBrush x:Key="ContentStroke" Color="#1E2A46"/>
@@ -86,7 +221,6 @@
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
-            <!-- Base styles -->
             <SolidColorBrush x:Key="CardBg" Color="#FFFFFFFF"/>
             <SolidColorBrush x:Key="CardBorderBrush" Color="#E5E7EB"/>
             <SolidColorBrush x:Key="MutedBrush" Color="#6B7280"/>
@@ -179,7 +313,6 @@
                 <Setter Property="FontSize" Value="13"/>
             </Style>
 
-            <!-- DataGrid polish -->
             <Style TargetType="DataGrid">
                 <Setter Property="RowHeaderWidth" Value="0"/>
                 <Setter Property="HeadersVisibility" Value="Column"/>

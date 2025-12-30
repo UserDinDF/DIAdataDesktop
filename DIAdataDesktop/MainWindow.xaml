@@ -73,6 +73,8 @@
 
                         <!-- Data library (like DIA website) -->
                         <ToggleButton Style="{StaticResource SidebarMenuItem}"
+                                      Tag="DataLibrary"
+                                      Click="Nav_Click"
                                       IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=DataLibrary}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -86,8 +88,9 @@
 
                         <!-- Sub items (simple) -->
                         <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=DigitalAssets}"
-                                      Command="{Binding NavigateCommand}" CommandParameter="DigitalAssets">
+                                      Tag="DigitalAssets"
+                                      Click="Nav_Click"
+                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=DigitalAssets}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="26"/>
@@ -281,25 +284,7 @@
                 </Grid>
             </Border>
 
-            <!-- Modules area -->
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="360" MinHeight="300"/>
-                    <RowDefinition Height="6"/>
-                    <RowDefinition Height="*" MinHeight="250"/>
-                </Grid.RowDefinitions>
-
-                <controls:QuotationControl Grid.Row="0" DataContext="{Binding Quotation}"/>
-
-                <GridSplitter Grid.Row="1"
-                              Height="6"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="#1E2A46"
-                              ShowsPreview="False"/>
-
-                <controls:QuotedAssetsControl Grid.Row="2" DataContext="{Binding QuotedAssets}"/>
-            </Grid>
+            <ContentControl x:Name="MainContent" Grid.Row="2"/>
         </Grid>
     </Grid>
 </Window>
