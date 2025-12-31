@@ -1,4 +1,5 @@
-﻿using DIAdataDesktop.ViewModels;
+﻿using DIAdataDesktop.Models;
+using DIAdataDesktop.ViewModels;
 using DIAdataDesktop.Views;
 using DIAdataDesktop.Views.Controls;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ namespace DIAdataDesktop
     public partial class MainWindow : Window
     {
         private readonly MainViewModel _vm;
+        private readonly Stack<object?> _contentHistory = new();
 
         private readonly Dictionary<string, UIElement> _pageCache = new();
         private WatchlistWidgetWindow? _widgetWin;
@@ -44,6 +46,7 @@ namespace DIAdataDesktop
             {
                 "Quotation" => BuildQuotationPage(),
                 "QuotedAssets" => await BuildQuotedAssetsPage(),
+                "Exchanges" => BuildExchangesPage(),
 
                 "DataLibrary" => BuildPlaceholder("Data library", "Choose a module on the left."),
 
@@ -62,6 +65,12 @@ namespace DIAdataDesktop
             MainContent.Content = page;
         }
 
+        private UIElement BuildExchangesPage()
+        {
+            var ctrl = App.Services.GetRequiredService<ExchangesControl>();
+            ctrl.DataContext = _vm.ExchangesVm;
+            return ctrl;
+        }
 
         private UIElement BuildQuotationPage()
         {
@@ -98,6 +107,26 @@ namespace DIAdataDesktop
                     }
                 }
             };
+        }
+
+        public void OpenAssetDetails(DiaQuotedAssetRow row)
+        {
+            if (row == null) return;
+            MainViewModel mainViewModel = App.Services.GetRequiredService<MainViewModel>();
+            // aktuelle Seite merken (damit Back exakt zurück geht)
+            _contentHistory.Push(MainContent.Content);
+           
+            var details =new QuotedAssetDetailsControl(mainViewModel._api);
+            details.SetAsset(row);
+            details.BackRequested += (_, __) => GoBack();
+
+            MainContent.Content = details;
+        }
+
+        public void GoBack()
+        {
+            if (_contentHistory.Count == 0) return;
+            MainContent.Content = _contentHistory.Pop();
         }
 
         private void OpenWatchlistWidget_Click(object sender, RoutedEventArgs e)

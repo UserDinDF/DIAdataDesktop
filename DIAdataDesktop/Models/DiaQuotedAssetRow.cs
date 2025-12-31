@@ -138,6 +138,30 @@ namespace DIAdataDesktop.Models
 
         public void RecalcCexCounts()
         {
+            //// Exchange kann null/leer sein -> ignorieren (oder "Unknown" setzen)
+            //var groups = CexPairs
+            //    .Where(x => !string.IsNullOrWhiteSpace(x?.Exchange))
+            //    .GroupBy(x => x!.Exchange!.Trim(), System.StringComparer.OrdinalIgnoreCase)
+            //    .OrderByDescending(g => g.Sum(p => p.Volume24h)); // optional nach Volume
+
+            //CexPairs.Clear();
+
+            //foreach (var g in groups)
+            //{
+            //    var grp = new  DiaCexPairsByAssetRow()
+            //    {
+            //        Exchange = g.Key,
+            //        Volume24h = g.Sum(p => p.Volume24h),
+            //        Trades24h = g.Sum(p => p.Trades24h)
+            //    };
+
+            //    //foreach (var p in g)
+            //    //    grp.Pairs.Add(p);
+
+            //    //grp.RecalcCounts();
+            //    //CexPairs.Add(grp);
+            //}
+
             var rows = CexPairs ?? new ObservableCollection<DiaCexPairsByAssetRow>();
 
             CexPairsTotal = rows.Count;

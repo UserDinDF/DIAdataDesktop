@@ -22,6 +22,13 @@ namespace DIAdataDesktop.Models
 
         [JsonPropertyName("UnderlyingPair")]
         public DiaUnderlyingPair? UnderlyingPair { get; set; }
+
+        // OPTIONAL: falls DIA sie liefert
+        [JsonPropertyName("Volume24h")]
+        public double Volume24h { get; set; }
+
+        [JsonPropertyName("Trades24h")]
+        public long Trades24h { get; set; }
     }
 
     public sealed class DiaUnderlyingPair

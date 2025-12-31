@@ -15,11 +15,13 @@ namespace DIAdataDesktop.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        private readonly DiaApiClient _api = new();
+        public readonly DiaApiClient _api = new();
         private readonly DispatcherTimer _timer;
 
         public QuotationViewModel Quotation { get; }
         public QuotedAssetsViewModel QuotedAssets { get; }
+
+        public ExchangesViewModel ExchangesVm { get; }
 
         public ObservableCollection<string> Watchlist { get; } = new()
         {
@@ -56,8 +58,12 @@ namespace DIAdataDesktop.ViewModels
 
         public MainViewModel()
         {
+            if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
+                return;
+
             Quotation = new QuotationViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             QuotedAssets = new QuotedAssetsViewModel(_api, SetBusyFromChild, SetErrorFromChild);
+            ExchangesVm = new ExchangesViewModel(_api, SetBusyFromChild, SetErrorFromChild);
 
             WatchlistView = CollectionViewSource.GetDefaultView(Watchlist);
             WatchlistView.Filter = o =>
@@ -77,6 +83,13 @@ namespace DIAdataDesktop.ViewModels
             ApplyTimerSettings();
 
             _ = RefreshAllAsync();
+
+            BuildExchangesVm();
+        }
+
+        public async Task BuildExchangesVm()
+        {
+            await ExchangesVm.InitializeAsync();
         }
 
         partial void OnWatchlistSearchChanged(string value) => WatchlistView.Refresh();

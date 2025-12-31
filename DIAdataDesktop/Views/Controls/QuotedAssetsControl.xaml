@@ -234,7 +234,7 @@
 
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Style="{StaticResource MutedLabel}" Text="Network"/>
-                                    <Border CornerRadius="10" Background="#0B1220" BorderBrush="#24314E" BorderThickness="1" Padding="8,4">
+                                    <Border CornerRadius="10" Background="#0B1220" BorderBrush="#24314E" BorderThickness="1" Padding="8,4" HorizontalAlignment="Left">
                                         <TextBlock Text="{Binding Blockchain}" Foreground="#E5E7EB" FontWeight="SemiBold"/>
                                     </Border>
 

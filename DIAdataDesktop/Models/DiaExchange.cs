@@ -10,8 +10,9 @@ namespace DIAdataDesktop.Models
         public double Volume24h { get; set; }
         public long Trades { get; set; }
         public int Pairs { get; set; }
-        public string? Type { get; set; }          // "CEX" / "DEX"
-        public string? Blockchain { get; set; }    // z.B. "Ethereum", "" bei CEX
+        public string? Type { get; set; }        
+        public string? Blockchain { get; set; }    
         public bool ScraperActive { get; set; }
+        public Uri? LogoSvgPath { get; set; }
     }
 }

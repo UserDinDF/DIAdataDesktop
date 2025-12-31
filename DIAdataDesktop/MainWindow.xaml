@@ -10,6 +10,7 @@
         Style="{StaticResource CustomWindowStyle}"
         mc:Ignorable="d"
         Margin="0,0,0,0"
+        Topmost="False"
         Title="DIAdata Desktop" Height="780" Width="1180"
         WindowStartupLocation="CenterScreen"
         Background="#0B1220">
@@ -83,6 +84,20 @@
                             </Grid>
                         </ToggleButton>
 
+                        <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
+                Tag="Exchanges"
+                Click="Nav_Click"
+                IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Exchanges}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="›" Opacity="0.7" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Exchanges" Foreground="{StaticResource SidebarTextMuted}"/>
+                            </Grid>
+                        </ToggleButton>
+                        
                         <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
                                       Tag="DigitalAssets"
                                       Click="Nav_Click"

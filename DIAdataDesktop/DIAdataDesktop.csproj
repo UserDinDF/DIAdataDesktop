@@ -11,11 +11,142 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Logos\Exchanges\Aerodrome-logo-round %281%29.svg" />
+    <None Remove="Logos\Exchanges\Aerodrome-logo-round.svg" />
+    <None Remove="Logos\Exchanges\AerodromeSlipstream.svg" />
+    <None Remove="Logos\Exchanges\apeswap.svg" />
+    <None Remove="Logos\Exchanges\Arthswap.svg" />
+    <None Remove="Logos\Exchanges\BalancerV2.svg" />
+    <None Remove="Logos\Exchanges\beets-sonic.svg" />
+    <None Remove="Logos\Exchanges\Binance-1.svg" />
+    <None Remove="Logos\Exchanges\Binance.svg" />
+    <None Remove="Logos\Exchanges\biswap.svg" />
+    <None Remove="Logos\Exchanges\Bitfinex.svg" />
+    <None Remove="Logos\Exchanges\Bitflow-source.svg" />
+    <None Remove="Logos\Exchanges\bitget-CEX-new-bgb-logo-1.svg" />
+    <None Remove="Logos\Exchanges\Bitget.svg" />
+    <None Remove="Logos\Exchanges\Bitmart.svg" />
+    <None Remove="Logos\Exchanges\Bitmax.svg" />
+    <None Remove="Logos\Exchanges\Bitmex.svg" />
+    <None Remove="Logos\Exchanges\Bitstamp.svg" />
+    <None Remove="Logos\Exchanges\bybit-svgrepo-com.svg" />
+    <None Remove="Logos\Exchanges\bybit.svg" />
+    <None Remove="Logos\Exchanges\Camelot %281%29.svg" />
+    <None Remove="Logos\Exchanges\Camelot.svg" />
+    <None Remove="Logos\Exchanges\CamelotV3.svg" />
+    <None Remove="Logos\Exchanges\Coinbase-1.svg" />
+    <None Remove="Logos\Exchanges\Coinbase.svg" />
+    <None Remove="Logos\Exchanges\Crypto.com.svg" />
+    <None Remove="Logos\Exchanges\Cryptocom.svg" />
+    <None Remove="Logos\Exchanges\Curve %281%29.svg" />
+    <None Remove="Logos\Exchanges\Curve %282%29.svg" />
+    <None Remove="Logos\Exchanges\Curve.svg" />
+    <None Remove="Logos\Exchanges\Curvefi.svg" />
+    <None Remove="Logos\Exchanges\DFYN.svg" />
+    <None Remove="Logos\Exchanges\emission.6744aec4 %281%29.svg" />
+    <None Remove="Logos\Exchanges\emission.6744aec4.svg" />
+    <None Remove="Logos\Exchanges\GateIO.svg" />
+    <None Remove="Logos\Exchanges\Huobi-1.svg" />
+    <None Remove="Logos\Exchanges\Huobi.svg" />
+    <None Remove="Logos\Exchanges\Kraken.svg" />
+    <None Remove="Logos\Exchanges\KuCoin.svg" />
+    <None Remove="Logos\Exchanges\logo-300x300-1.webp" />
+    <None Remove="Logos\Exchanges\MEXC.svg" />
+    <None Remove="Logos\Exchanges\NetSwap.svg" />
+    <None Remove="Logos\Exchanges\Okex.svg" />
+    <None Remove="Logos\Exchanges\OKX.svg" />
+    <None Remove="Logos\Exchanges\PancakeSwap.svg" />
+    <None Remove="Logos\Exchanges\Pangolin.svg" />
+    <None Remove="Logos\Exchanges\Ramses-exchange-icon.svg" />
+    <None Remove="Logos\Exchanges\Ramses-V2.svg" />
+    <None Remove="Logos\Exchanges\Shadow-DEX-Icon.svg" />
+    <None Remove="Logos\Exchanges\SpookySwap.svg" />
+    <None Remove="Logos\Exchanges\Sushiswap.svg" />
+    <None Remove="Logos\Exchanges\tethys.svg" />
+    <None Remove="Logos\Exchanges\Trader-Joe-DEX-logo-icon %283%29.svg" />
+    <None Remove="Logos\Exchanges\Trader-Joe-DEX-logo-icon.svg" />
+    <None Remove="Logos\Exchanges\Trader-JoeV2.2-Avalanche.svg" />
+    <None Remove="Logos\Exchanges\UbeSwap.svg" />
+    <None Remove="Logos\Exchanges\Uniswap.svg" />
+    <None Remove="Logos\Exchanges\UniswapV3-Arbitrum.svg" />
+    <None Remove="Logos\Exchanges\UniswapV3-Base.svg" />
+    <None Remove="Logos\Exchanges\UniswapV3-Polygon.svg" />
+    <None Remove="Logos\Exchanges\UniswapV3.svg" />
+    <None Remove="Logos\Exchanges\UniswapV4.svg" />
+    <None Remove="Logos\Exchanges\Uniswap_1-1 %281%29.svg" />
+    <None Remove="Logos\Exchanges\Uniswap_1-1 %282%29.svg" />
+    <None Remove="Logos\Exchanges\Uniswap_1-1 %283%29.svg" />
+    <None Remove="Logos\Exchanges\Uniswap_1-1 %284%29.svg" />
+    <None Remove="Logos\Exchanges\Uniswap_1-1 %285%29.svg" />
+    <None Remove="Logos\Exchanges\Uniswap_1-1.svg" />
+    <None Remove="Logos\Exchanges\Uniswap_1.svg" />
+    <None Remove="Logos\Exchanges\Velar-source.svg" />
+    <None Remove="Logos\Exchanges\velodrome.svg" />
+    <None Remove="Logos\Exchanges\Wanswap.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Logos\Exchanges\AerodromeSlipstream.svg" />
+    <Resource Include="Logos\Exchanges\apeswap.svg" />
+    <Resource Include="Logos\Exchanges\Arthswap.svg" />
+    <Resource Include="Logos\Exchanges\BalancerV2.svg" />
+    <Resource Include="Logos\Exchanges\beets-sonic.svg" />
+    <Resource Include="Logos\Exchanges\Binance.svg" />
+    <Resource Include="Logos\Exchanges\biswap.svg" />
+    <Resource Include="Logos\Exchanges\Bitfinex.svg" />
+    <Resource Include="Logos\Exchanges\Bitflow-source.svg" />
+    <Resource Include="Logos\Exchanges\Bitget.svg" />
+    <Resource Include="Logos\Exchanges\Bitmart.svg" />
+    <Resource Include="Logos\Exchanges\Bitmax.svg" />
+    <Resource Include="Logos\Exchanges\Bitmex.svg" />
+    <Resource Include="Logos\Exchanges\Bitstamp.svg" />
+    <Resource Include="Logos\Exchanges\bybit.svg" />
+    <Resource Include="Logos\Exchanges\CamelotV3.svg" />
+    <Resource Include="Logos\Exchanges\Coinbase.svg" />
+    <Resource Include="Logos\Exchanges\Crypto.com.svg" />
+    <Resource Include="Logos\Exchanges\Curvefi.svg" />
+    <Resource Include="Logos\Exchanges\DFYN.svg" />
+    <Resource Include="Logos\Exchanges\emission.6744aec4 (1).svg" />
+    <Resource Include="Logos\Exchanges\emission.6744aec4.svg" />
+    <Resource Include="Logos\Exchanges\GateIO.svg" />
+    <Resource Include="Logos\Exchanges\Huobi.svg" />
+    <Resource Include="Logos\Exchanges\Kraken.svg" />
+    <Resource Include="Logos\Exchanges\KuCoin.svg" />
+    <Resource Include="Logos\Exchanges\logo-300x300-1.webp" />
+    <Resource Include="Logos\Exchanges\MEXC.svg" />
+    <Resource Include="Logos\Exchanges\NetSwap.svg" />
+    <Resource Include="Logos\Exchanges\Okex.svg" />
+    <Resource Include="Logos\Exchanges\PancakeSwap.svg" />
+    <Resource Include="Logos\Exchanges\Pangolin.svg" />
+    <Resource Include="Logos\Exchanges\Ramses-exchange-icon.svg" />
+    <Resource Include="Logos\Exchanges\Ramses-V2.svg" />
+    <Resource Include="Logos\Exchanges\Shadow-DEX-Icon.svg" />
+    <Resource Include="Logos\Exchanges\SpookySwap.svg" />
+    <Resource Include="Logos\Exchanges\Sushiswap.svg" />
+    <Resource Include="Logos\Exchanges\tethys.svg" />
+    <Resource Include="Logos\Exchanges\Trader-Joe-DEX-logo-icon.svg" />
+    <Resource Include="Logos\Exchanges\Trader-JoeV2.2-Avalanche.svg" />
+    <Resource Include="Logos\Exchanges\UbeSwap.svg" />
+    <Resource Include="Logos\Exchanges\Uniswap.svg" />
+    <Resource Include="Logos\Exchanges\UniswapV3-Arbitrum.svg" />
+    <Resource Include="Logos\Exchanges\UniswapV3-Base.svg" />
+    <Resource Include="Logos\Exchanges\UniswapV3-Polygon.svg" />
+    <Resource Include="Logos\Exchanges\UniswapV3.svg" />
+    <Resource Include="Logos\Exchanges\UniswapV4.svg" />
+    <Resource Include="Logos\Exchanges\Uniswap_1-1.svg" />
+    <Resource Include="Logos\Exchanges\Uniswap_1.svg" />
+    <Resource Include="Logos\Exchanges\Velar-source.svg" />
+    <Resource Include="Logos\Exchanges\velodrome.svg" />
+    <Resource Include="Logos\Exchanges\Wanswap.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="MaterialDesignThemes" Version="5.3.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
+    <PackageReference Include="SharpVectors.Wpf" Version="1.8.5" />
   </ItemGroup>
 
 </Project>
