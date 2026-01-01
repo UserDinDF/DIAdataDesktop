@@ -37,5 +37,27 @@ namespace DIAdataDesktop.Themes
             var window = (Window)((FrameworkElement)sender).TemplatedParent;
             window.Close();
         }
+
+        private void Button_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var window = (Window)((FrameworkElement)sender).TemplatedParent;
+            window.WindowState = System.Windows.WindowState.Minimized;
+        }
+
+        private void Button_PreviewMinimizeMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+
+        }
+
+        private void Button_PreviewMaximizeMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Button_PreviewCloseMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

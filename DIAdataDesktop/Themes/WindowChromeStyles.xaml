@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     x:Class="DIAdataDesktop.Themes.WindowChromeStyles"
-                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:DIAdataDesktop.Helpers">
@@ -16,49 +15,55 @@
     <SolidColorBrush x:Key="WinDanger" Color="#7F1D1D"/>
 
     <Style x:Key="TitleBarBtn" TargetType="Button" BasedOn="{x:Null}">
-        <Setter Property="Width" Value="30"/>
-        <Setter Property="Height" Value="25"/>
-        <Setter Property="Margin" Value="4,0,0,0"/>
+        <Setter Property="Width" Value="34"/>
+        <Setter Property="Height" Value="22"/>
+        <Setter Property="Margin" Value="6,5,0,0"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource WinMuted}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource WinStroke2}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="FontSize" Value="12.5"/>
+        <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="bd"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="10">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="8"
+                        SnapsToDevicePixels="True">
+                        <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"/>
                     </Border>
+
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="bd" Property="Background" Value="{StaticResource WinHover}"/>
                             <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource WinPrimary}"/>
                             <Setter Property="Foreground" Value="{StaticResource WinText}"/>
                         </Trigger>
+
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="bd" Property="RenderTransformOrigin" Value="0.5,0.5"/>
-                            <Setter TargetName="bd" Property="RenderTransform">
-                                <Setter.Value>
-                                    <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
-                                </Setter.Value>
-                            </Setter>
+                            <Setter TargetName="bd" Property="Background" Value="#0F1F3A"/>
+                            <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource WinPrimary}"/>
                         </Trigger>
+
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="bd" Property="Opacity" Value="0.45"/>
+                            <Setter TargetName="bd" Property="Opacity" Value="0.4"/>
                         </Trigger>
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+    
     <Style x:Key="TitleBarCloseBtn" TargetType="Button" BasedOn="{StaticResource TitleBarBtn}">
         <Setter Property="BorderBrush" Value="{StaticResource WinDanger}"/>
         <Setter Property="Template">
@@ -100,7 +105,7 @@
         <Setter Property="shell:WindowChrome.WindowChrome">
             <Setter.Value>
                 <shell:WindowChrome
-                    CaptionHeight="0"
+                    CaptionHeight="32"
                     CornerRadius="0"
                     GlassFrameThickness="0"
                     ResizeBorderThickness="6"
@@ -127,8 +132,7 @@
                                     Background="{StaticResource WinTitleBg}"
                                     CornerRadius="15,15,0,0"
                                     BorderBrush="{StaticResource WinStroke}"
-                                    BorderThickness="0,0,0,1"
-                                    local:WindowDrag.IsEnabled="True">
+                                    BorderThickness="0,0,0,1">
 
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -136,25 +140,41 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <StackPanel Orientation="Horizontal"
-                                                VerticalAlignment="Center"
-                                                Margin="14,0,0,0">
-                                        <TextBlock Text="{TemplateBinding Title}"
-                                                   Foreground="{StaticResource WinText}"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"/>
-                                    </StackPanel>
+                                    <Border Grid.Column="0"
+                                            Background="Transparent"
+                                            local:WindowDrag.IsEnabled="True"
+                                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                                        <StackPanel Orientation="Horizontal"
+                                                    VerticalAlignment="Center"
+                                                    Margin="14,0,0,0">
+                                            <TextBlock Text="{TemplateBinding Title}"
+                                                       Foreground="{StaticResource WinText}"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Border>
 
                                     <StackPanel Grid.Column="1"
                                                 Orientation="Horizontal"
                                                 VerticalAlignment="Center"
-                                                Margin="0,0,12,0">
-                                        <Button Style="{StaticResource TitleBarBtn}" Content="—"
-                                                Click="Minimize_Click"/>
-                                        <Button Style="{StaticResource TitleBarBtn}" Content="⬜"
-                                                Click="Maximize_Click"/>
-                                        <Button Style="{StaticResource TitleBarCloseBtn}" Content="✕"
-                                                Click="Close_Click"/>
+                                                Margin="0,0,12,0"
+                                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
+
+                                        <Button Style="{StaticResource TitleBarBtn}"
+        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+        Content="—"
+        Click="Minimize_Click"/>
+
+                                        <Button Style="{StaticResource TitleBarBtn}"
+        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+        Content="⬜"
+        Click="Maximize_Click"/>
+
+                                        <Button Style="{StaticResource TitleBarCloseBtn}"
+        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+        Content="✕"
+        Click="Close_Click"/>
+
                                     </StackPanel>
                                 </Grid>
                             </Border>

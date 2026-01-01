@@ -682,6 +682,21 @@ namespace DIAdataDesktop.Views.Controls
 
             return null;
         }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            try
+            {
+                if (e.Uri != null)
+                {
+                    Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+                    e.Handled = true;
+                }
+            }
+            catch
+            {
+            }
+        }
     }
 
     public sealed class RefreshPeriodOption
