@@ -19,13 +19,13 @@ namespace DIAdataDesktop
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((ctx, services) =>
                 {
-                    // ✅ Main VM (enthält Quotation + QuotedAssets)
                     services.AddSingleton<MainViewModel>();
 
                     // Controls
                     services.AddSingleton<QuotationControl>();
                     services.AddSingleton<QuotedAssetsControl>();
                     services.AddSingleton<ExchangesControl>();
+                    services.AddSingleton<StartPageControl>();
 
                     // Window
                     services.AddTransient<MainWindow>();

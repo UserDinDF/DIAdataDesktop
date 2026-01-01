@@ -288,5 +288,14 @@ namespace DIAdataDesktop.ViewModels
             PrevPageCommand.NotifyCanExecuteChanged();
             NextPageCommand.NotifyCanExecuteChanged();
         }
+
+        public async Task ToggleFavoriteByName(string? name)
+        {
+            var ex = _all.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            if (ex != null)
+            {
+                await ToggleFavorite(ex);
+            }
+        }
     }
 }

@@ -193,7 +193,6 @@ namespace DIAdataDesktop.ViewModels
         public async Task LoadFavoritesAsync(CancellationToken ct = default)
         {
             await _favoritesRepo.EnsureCreatedAsync(ct);
-
             _favoriteKeys = await _favoritesRepo.GetKeysAsync("token", ct);
 
             await _ui.InvokeAsync(() =>
@@ -205,6 +204,7 @@ namespace DIAdataDesktop.ViewModels
                 }
             });
         }
+
 
         public IReadOnlyList<DiaQuotedAssetRow> GetAllRowsSnapshot()
         {
@@ -413,11 +413,11 @@ namespace DIAdataDesktop.ViewModels
         {
             if (row == null) return;
 
-            var key = FavoritesRepository.MakeTokenKey(row.Blockchain, row.Address);
-
             try
             {
                 row.IsFavorite = !row.IsFavorite;
+
+                var key = FavoritesRepository.MakeTokenKey(row.Blockchain, row.Address);
 
                 if (row.IsFavorite)
                 {
@@ -426,29 +426,23 @@ namespace DIAdataDesktop.ViewModels
                     await _favoritesRepo.UpsertAsync(
                         kind: "token",
                         key: key,
-                        name: row.Name,
-                        extra1: row.Blockchain, 
-                        extra2: row.Address    
+                        name: row.Symbol,
+                        extra1: row.Blockchain,   // optional
+                        extra2: row.Address       // optional
                     );
                 }
                 else
                 {
                     _favoriteKeys.Remove(key);
-
-                    await _favoritesRepo.RemoveAsync(
-                        kind: "token",
-                        key: key
-                    );
+                    await _favoritesRepo.RemoveAsync("token", key);
                 }
             }
             catch (Exception ex)
             {
-                row.IsFavorite = !row.IsFavorite; 
+                row.IsFavorite = !row.IsFavorite;
                 _setError(ex.Message);
             }
         }
-
-
 
         private void MergeAllRows(List<DiaQuotedAsset> ordered)
         {

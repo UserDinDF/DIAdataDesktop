@@ -63,9 +63,6 @@
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-
-                        <TextBlock Style="{StaticResource SidebarSectionHeader}" Text="Data library"/>
-
                         <ToggleButton Style="{StaticResource SidebarMenuItem}"
                                       Tag="DataLibrary"
                                       Click="Nav_Click"
@@ -80,6 +77,20 @@
                             </Grid>
                         </ToggleButton>
 
+                        <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
+                                      Tag="Homepage"
+                                      Click="Nav_Click"
+                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Homepage}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="›" Opacity="0.7" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Homepage" Foreground="{StaticResource SidebarTextMuted}"/>
+                            </Grid>
+                        </ToggleButton>
+                        
                         <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
                                       Tag="Exchanges"
                                       Click="Nav_Click"

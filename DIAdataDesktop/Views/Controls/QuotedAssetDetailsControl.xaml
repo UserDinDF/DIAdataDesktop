@@ -150,8 +150,7 @@
                RequestNavigate="Hyperlink_RequestNavigate">
         <Hyperlink.NavigateUri>
             <MultiBinding Converter="{StaticResource DiaAssetLinkConverter}">
-                <!-- Name + Address kommen aus deinem DataContext (DiaQuotedAssetRow) -->
-                <Binding Path="Name"/>
+                <Binding Path="Blockchain"/>
                 <Binding Path="Address"/>
             </MultiBinding>
         </Hyperlink.NavigateUri>

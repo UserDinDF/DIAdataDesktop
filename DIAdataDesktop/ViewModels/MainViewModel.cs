@@ -23,6 +23,8 @@ namespace DIAdataDesktop.ViewModels
 
         public ExchangesViewModel ExchangesVm { get; }
 
+        public StartPageViewModel StartPageVm { get; }
+
         public ObservableCollection<string> Watchlist { get; } = new()
         {
             "BTC","ETH","DIA","LINK","SOL","BNB","ARB","OP"
@@ -64,6 +66,7 @@ namespace DIAdataDesktop.ViewModels
             Quotation = new QuotationViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             QuotedAssets = new QuotedAssetsViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             ExchangesVm = new ExchangesViewModel(_api, SetBusyFromChild, SetErrorFromChild);
+            StartPageVm = new StartPageViewModel(QuotedAssets, ExchangesVm);
 
             WatchlistView = CollectionViewSource.GetDefaultView(Watchlist);
             WatchlistView.Filter = o =>
