@@ -37,7 +37,7 @@ namespace DIAdataDesktop.Views.Controls
 
                 if (Window.GetWindow(this) is MainWindow mw)
                 {
-                    mw.OpenAssetDetails(row);
+                    await mw.OpenAssetDetails(row);
                 }
             }
 

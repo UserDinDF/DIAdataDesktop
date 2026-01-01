@@ -6,7 +6,6 @@ using DIAdataDesktop.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -28,6 +27,7 @@ namespace DIAdataDesktop.ViewModels
 
         private readonly FavoritesRepository _favoritesRepo;
         private HashSet<string> _favoriteKeys = new(StringComparer.OrdinalIgnoreCase);
+
         public ObservableCollection<DiaExchange> PagedRows { get; } = new();
 
         [ObservableProperty] private string searchText = "";
@@ -54,23 +54,17 @@ namespace DIAdataDesktop.ViewModels
             _setError = setError;
             _ui = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
 
-            var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DIAdataDesktop", "diadata.local.db");
+            var dbPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "DIAdataDesktop",
+                "diadata.local.db");
+
             _favoritesRepo = new FavoritesRepository(dbPath);
         }
 
-        private async Task LoadFavoritesAsync(CancellationToken ct = default)
-        {
-            await _favoritesRepo.EnsureCreatedAsync(ct);
-            _favoriteKeys = await _favoritesRepo.GetKeysAsync("exchange", ct);
+        private static string ExchangeKey(string? name) => FavoritesRepository.MakeExchangeKey(name);
 
-            await _ui.InvokeAsync(() =>
-            {
-                foreach (var ex in _all)
-                    ex.IsFavorite = _favoriteKeys.Contains(ex.FavKey);
-            });
-        }
-
-
+        // ---------- UI triggers ----------
         partial void OnSearchTextChanged(string value)
         {
             CurrentPage = 1;
@@ -87,43 +81,94 @@ namespace DIAdataDesktop.ViewModels
         partial void OnCurrentPageChanged(int value)
         {
             ApplyPagingUiSafe();
-            NextPageCommand.NotifyCanExecuteChanged();
             PrevPageCommand.NotifyCanExecuteChanged();
+            NextPageCommand.NotifyCanExecuteChanged();
         }
 
+        // ---------- Paging commands ----------
         [RelayCommand(CanExecute = nameof(CanPrev))]
         private void PrevPage() => CurrentPage--;
 
         private bool CanPrev() => CurrentPage > 1 && !IsBusy;
 
         [RelayCommand(CanExecute = nameof(CanNext))]
-        private void NextPage()
-        {
-            if (CurrentPage < TotalPages)
-                CurrentPage++;
-        }
+        private void NextPage() => CurrentPage++;
 
         private bool CanNext() => CurrentPage < TotalPages && !IsBusy;
 
         [RelayCommand] private void GoToFirst() => CurrentPage = 1;
         [RelayCommand] private void GoToLast() => CurrentPage = TotalPages;
 
+        // ---------- Public API ----------
         public async Task InitializeAsync(CancellationToken ct = default)
         {
-            if (_loadedOnce) 
+            if (_loadedOnce)
             {
-                await _ui.InvokeAsync(() =>
-                {
-                    StatusText = $"Ready. Loaded {TotalCount} exchanges.";
-                });
+                await _ui.InvokeAsync(() => StatusText = $"Ready. Loaded {TotalCount} exchanges.");
                 return;
             }
 
+            await FetchAndApplyAsync(merge: false, ct);
+            _loadedOnce = true;
+        }
+
+        public async Task RefreshSnapshotAsync(CancellationToken ct = default)
+            => await FetchAndApplyAsync(merge: true, ct);
+
+        [RelayCommand]
+        public async Task RefreshAsync()
+        {
+            _loadedOnce = false;
+            await InitializeAsync();
+        }
+
+        public async Task ToggleFavorite(DiaExchange? ex)
+        {
+            if (ex == null) return;
+
+            var key = ExchangeKey(ex.Name);
+
+            try
+            {
+                ex.IsFavorite = !ex.IsFavorite;
+
+                if (ex.IsFavorite)
+                {
+                    _favoriteKeys.Add(key);
+                    await _favoritesRepo.UpsertAsync(
+                        kind: "exchange",
+                        key: key,
+                        name: ex.Name,
+                        extra1: ex.Type,
+                        extra2: ex.Blockchain);
+                }
+                else
+                {
+                    _favoriteKeys.Remove(key);
+                    await _favoritesRepo.RemoveAsync("exchange", key);
+                }
+            }
+            catch (Exception err)
+            {
+                ex.IsFavorite = !ex.IsFavorite; // rollback
+                _setError(err.Message);
+            }
+        }
+
+        public async Task ToggleFavoriteByName(string? name)
+        {
+            var ex = _all.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            if (ex != null) await ToggleFavorite(ex);
+        }
+
+        // ---------- Core flow (no duplication) ----------
+        private async Task FetchAndApplyAsync(bool merge, CancellationToken ct)
+        {
             try
             {
                 await _ui.InvokeAsync(() =>
                 {
-                    StatusText = "Loading exchanges...";
+                    StatusText = merge ? "Refreshing exchanges..." : "Loading exchanges...";
                     _setBusy(true);
                     _setError(null);
                 });
@@ -135,26 +180,29 @@ namespace DIAdataDesktop.ViewModels
                     .OrderByDescending(x => x.Volume24h)
                     .ToList();
 
-
                 foreach (var item in ordered)
-                {
                     item.LogoSvgPath = new Uri($"pack://application:,,,/Logos/Exchanges/{item.Name}.svg", UriKind.Absolute);
-                }
-
 
                 await _ui.InvokeAsync(() =>
                 {
-                    _all.Clear();
-                    _all.AddRange(ordered);
-
-                    _loadedOnce = true;
+                    if (merge) MergeAllInPlace(ordered);
+                    else
+                    {
+                        _all.Clear();
+                        _all.AddRange(ordered);
+                        TotalCount = _all.Count;
+                    }
 
                     CurrentPage = 1;
                     ApplyFilterCore();
                     ApplyPagingCore();
 
-                    StatusText = $"Loaded {TotalCount} exchanges.";
+                    StatusText = merge
+                        ? $"Updated {TotalCount} exchanges."
+                        : $"Loaded {TotalCount} exchanges.";
                 });
+
+                await LoadFavoritesAsync(ct);
             }
             catch (OperationCanceledException)
             {
@@ -177,11 +225,20 @@ namespace DIAdataDesktop.ViewModels
                     NextPageCommand.NotifyCanExecuteChanged();
                 });
             }
-
-            await LoadFavoritesAsync(ct);
         }
 
-      
+        private async Task LoadFavoritesAsync(CancellationToken ct = default)
+        {
+            await _favoritesRepo.EnsureCreatedAsync(ct);
+            _favoriteKeys = await _favoritesRepo.GetKeysAsync("exchange", ct);
+
+            await _ui.InvokeAsync(() =>
+            {
+                foreach (var ex in _all)
+                    ex.IsFavorite = _favoriteKeys.Contains(ExchangeKey(ex.Name));
+            });
+        }
+
         private void MergeAllInPlace(List<DiaExchange> latest)
         {
             var map = _all.ToDictionary(
@@ -202,9 +259,7 @@ namespace DIAdataDesktop.ViewModels
                     existing.ScraperActive = incoming.ScraperActive;
                     existing.Name = incoming.Name;
                     existing.Pairs = incoming.Pairs;
-                    existing.Type = incoming.Type;
                     existing.Trades = incoming.Trades;
-
                     existing.LogoSvgPath ??= new Uri($"pack://application:,,,/Logos/Exchanges/{existing.Name}.svg", UriKind.Absolute);
                 }
                 else
@@ -219,101 +274,7 @@ namespace DIAdataDesktop.ViewModels
             _all.RemoveAll(x => !alive.Contains((x.Name ?? "").Trim()));
 
             _all.Sort((a, b) => b.Volume24h.CompareTo(a.Volume24h));
-
             TotalCount = _all.Count;
-        }
-
-        public async Task RefreshSnapshotAsync(CancellationToken ct = default)
-        {
-            try
-            {
-                await _ui.InvokeAsync(() =>
-                {
-                    StatusText = "Refreshing exchanges...";
-                    _setBusy(true);
-                    _setError(null);
-                });
-
-                var list = await _api.GetExchangesAsync(ct);
-
-                var ordered = list
-                    .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Name))
-                    .OrderByDescending(x => x.Volume24h)
-                    .ToList();
-
-                await _ui.InvokeAsync(() =>
-                {
-                    MergeAllInPlace(ordered);
-
-                    ApplyFilterCore();
-                    ApplyPagingCore();
-
-                    StatusText = $"Updated {TotalCount} exchanges.";
-                });
-            }
-            catch (OperationCanceledException)
-            {
-                await _ui.InvokeAsync(() => StatusText = "Canceled.");
-            }
-            catch (Exception ex)
-            {
-                await _ui.InvokeAsync(() =>
-                {
-                    StatusText = "Error";
-                    _setError(ex.Message);
-                });
-            }
-            finally
-            {
-                await _ui.InvokeAsync(() =>
-                {
-                    _setBusy(false);
-                    PrevPageCommand.NotifyCanExecuteChanged();
-                    NextPageCommand.NotifyCanExecuteChanged();
-                });
-            }
-
-            await LoadFavoritesAsync(ct);
-        }
-
-        public async Task ToggleFavorite(DiaExchange? ex)
-        {
-            if (ex == null) return;
-
-            try
-            {
-                ex.IsFavorite = !ex.IsFavorite;
-
-                if (ex.IsFavorite)
-                {
-                    _favoriteKeys.Add(ex.FavKey);
-                    await _favoritesRepo.UpsertAsync(
-                        kind: "exchange",
-                        key: ex.FavKey,
-                        name: ex.Name,
-                        extra1: ex.Type,
-                        extra2: ex.Blockchain);
-                }
-                else
-                {
-                    _favoriteKeys.Remove(ex.FavKey);
-                    await _favoritesRepo.RemoveAsync("exchange", ex.FavKey);
-                }
-            }
-            catch (Exception err)
-            {
-                ex.IsFavorite = !ex.IsFavorite;
-                _setError(err.Message);
-            }
-        }
-
-
-
-        [RelayCommand]
-        public async Task RefreshAsync()
-        {
-            _loadedOnce = false;
-            await InitializeAsync();
         }
 
         private void ApplyFilterAndPagingUiSafe()
@@ -380,15 +341,6 @@ namespace DIAdataDesktop.ViewModels
 
             PrevPageCommand.NotifyCanExecuteChanged();
             NextPageCommand.NotifyCanExecuteChanged();
-        }
-
-        public async Task ToggleFavoriteByName(string? name)
-        {
-            var ex = _all.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-            if (ex != null)
-            {
-                await ToggleFavorite(ex);
-            }
         }
     }
 }

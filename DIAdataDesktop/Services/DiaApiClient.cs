@@ -1,4 +1,5 @@
 ﻿using DIAdataDesktop.Models;
+using DIAdataDesktop.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -79,6 +80,52 @@ namespace DIAdataDesktop.Services
                 Debug.WriteLine($"[DIA API] Exception on {url} after {sw.ElapsedMilliseconds}ms: {ex}");
                 throw;
             }
+        }
+
+        private static readonly JsonSerializerOptions _json = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+
+        public async Task<DiaRwaQuote> GetRwaAsync(RwaType type, string apiTicker, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(apiTicker))
+                throw new ArgumentException("apiTicker is null/empty.", nameof(apiTicker));
+
+            var url = BuildRwaUrl(type, apiTicker);
+
+            using var req = new HttpRequestMessage(HttpMethod.Get, url);
+            using var res = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
+            res.EnsureSuccessStatusCode();
+
+            await using var stream = await res.Content.ReadAsStreamAsync(ct).ConfigureAwait(false);
+            var dto = await JsonSerializer.DeserializeAsync<DiaRwaQuote>(stream, _json, ct).ConfigureAwait(false);
+
+            if (dto == null)
+                throw new InvalidOperationException("RWA API returned empty response.");
+
+            return new DiaRwaQuote
+            {
+                Ticker = dto.Ticker ?? apiTicker,
+                Price = dto.Price,
+                Timestamp = dto.Timestamp
+            };
+        }
+
+        private string BuildRwaUrl(RwaType type, string apiTicker)
+        {
+            var baseUrl = "https://api.diadata.org/v1/rwa/";
+            apiTicker = Uri.EscapeDataString(apiTicker.Trim());
+
+            return type switch
+            {
+                RwaType.Forex => $"{baseUrl}Fiat/{apiTicker}",
+                RwaType.Commodities => $"{baseUrl}Commodities/{apiTicker}",
+                RwaType.Etf => $"{baseUrl}ETF/{apiTicker}",
+                RwaType.Equities => $"{baseUrl}Equities/{apiTicker}",
+                _ => throw new NotSupportedException($"Unsupported RWA type: {type}")
+            };
         }
 
         public async Task<DiaQuotation> GetQuotationBySymbolAsync(string symbol, CancellationToken ct = default)

@@ -121,7 +121,8 @@
 
                         <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
                                       IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=RealWorldAssets}"
-                                      Command="{Binding NavigateCommand}" CommandParameter="RealWorldAssets">
+                                      Click="Nav_Click"
+                                      Tag="RealWorldAssets">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="26"/>
@@ -132,20 +133,6 @@
                             </Grid>
                         </ToggleButton>
 
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Randomness}"
-                                      Command="{Binding NavigateCommand}" CommandParameter="Randomness">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="›" Opacity="0.7" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Randomness" Foreground="{StaticResource SidebarTextMuted}"/>
-                            </Grid>
-                        </ToggleButton>
-
-                 
                         <TextBlock Style="{StaticResource SidebarSectionHeader}" Text="Tools"/>
 
                         <ToggleButton Style="{StaticResource SidebarMenuItem}"

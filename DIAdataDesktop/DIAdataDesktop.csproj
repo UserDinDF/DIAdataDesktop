@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
     <UseWindowsForms>True</UseWindowsForms>
+    <ApplicationIcon>favicon-new.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -84,6 +85,116 @@
     <None Remove="Logos\Exchanges\Velar-source.svg" />
     <None Remove="Logos\Exchanges\velodrome.svg" />
     <None Remove="Logos\Exchanges\Wanswap.svg" />
+    <None Remove="Logos\RWAs\aapl.png" />
+    <None Remove="Logos\RWAs\abbv.png" />
+    <None Remove="Logos\RWAs\abt.png" />
+    <None Remove="Logos\RWAs\adbe.png" />
+    <None Remove="Logos\RWAs\amat.png" />
+    <None Remove="Logos\RWAs\amd.png" />
+    <None Remove="Logos\RWAs\amgn.png" />
+    <None Remove="Logos\RWAs\amzn.png" />
+    <None Remove="Logos\RWAs\arkb.png" />
+    <None Remove="Logos\RWAs\aud.png" />
+    <None Remove="Logos\RWAs\avgo.png" />
+    <None Remove="Logos\RWAs\axp.png" />
+    <None Remove="Logos\RWAs\bac.png" />
+    <None Remove="Logos\RWAs\beth.png" />
+    <None Remove="Logos\RWAs\bito.png" />
+    <None Remove="Logos\RWAs\blk.png" />
+    <None Remove="Logos\RWAs\brkb.png" />
+    <None Remove="Logos\RWAs\brl.png" />
+    <None Remove="Logos\RWAs\cad.png" />
+    <None Remove="Logos\RWAs\cat.png" />
+    <None Remove="Logos\RWAs\chf.png" />
+    <None Remove="Logos\RWAs\cmcsa.png" />
+    <None Remove="Logos\RWAs\cme.png" />
+    <None Remove="Logos\RWAs\cny.png" />
+    <None Remove="Logos\RWAs\coin.png" />
+    <None Remove="Logos\RWAs\cop.png" />
+    <None Remove="Logos\RWAs\cost.png" />
+    <None Remove="Logos\RWAs\crm.png" />
+    <None Remove="Logos\RWAs\csco.png" />
+    <None Remove="Logos\RWAs\cvx.png" />
+    <None Remove="Logos\RWAs\dhr.png" />
+    <None Remove="Logos\RWAs\dis.png" />
+    <None Remove="Logos\RWAs\eem.png" />
+    <None Remove="Logos\RWAs\etha.png" />
+    <None Remove="Logos\RWAs\eur.png" />
+    <None Remove="Logos\RWAs\fbtc.png" />
+    <None Remove="Logos\RWAs\gbp.png" />
+    <None Remove="Logos\RWAs\gbtc.png" />
+    <None Remove="Logos\RWAs\ge.png" />
+    <None Remove="Logos\RWAs\gme.png" />
+    <None Remove="Logos\RWAs\goog.png" />
+    <None Remove="Logos\RWAs\govt.png" />
+    <None Remove="Logos\RWAs\gs.png" />
+    <None Remove="Logos\RWAs\hd.png" />
+    <None Remove="Logos\RWAs\hodl.png" />
+    <None Remove="Logos\RWAs\hood.png" />
+    <None Remove="Logos\RWAs\ibit.png" />
+    <None Remove="Logos\RWAs\ibm.png" />
+    <None Remove="Logos\RWAs\intc.png" />
+    <None Remove="Logos\RWAs\intu.png" />
+    <None Remove="Logos\RWAs\ivv.png" />
+    <None Remove="Logos\RWAs\jnj.png" />
+    <None Remove="Logos\RWAs\jpm.png" />
+    <None Remove="Logos\RWAs\jpy.png" />
+    <None Remove="Logos\RWAs\ko.png" />
+    <None Remove="Logos\RWAs\lly.png" />
+    <None Remove="Logos\RWAs\ma.png" />
+    <None Remove="Logos\RWAs\mcd.png" />
+    <None Remove="Logos\RWAs\meta.png" />
+    <None Remove="Logos\RWAs\mrk.png" />
+    <None Remove="Logos\RWAs\ms.png" />
+    <None Remove="Logos\RWAs\msft.png" />
+    <None Remove="Logos\RWAs\mstr.png" />
+    <None Remove="Logos\RWAs\mu.png" />
+    <None Remove="Logos\RWAs\nee.png" />
+    <None Remove="Logos\RWAs\nflx.png" />
+    <None Remove="Logos\RWAs\ng.png" />
+    <None Remove="Logos\RWAs\ngn.png" />
+    <None Remove="Logos\RWAs\nike.png" />
+    <None Remove="Logos\RWAs\now.png" />
+    <None Remove="Logos\RWAs\nvda.png" />
+    <None Remove="Logos\RWAs\orcl.png" />
+    <None Remove="Logos\RWAs\pep.png" />
+    <None Remove="Logos\RWAs\pfe.png" />
+    <None Remove="Logos\RWAs\pg.png" />
+    <None Remove="Logos\RWAs\pm.png" />
+    <None Remove="Logos\RWAs\pypl.png" />
+    <None Remove="Logos\RWAs\qcom.png" />
+    <None Remove="Logos\RWAs\qqq.png" />
+    <None Remove="Logos\RWAs\rtx.png" />
+    <None Remove="Logos\RWAs\schw.png" />
+    <None Remove="Logos\RWAs\shy.png" />
+    <None Remove="Logos\RWAs\spy.png" />
+    <None Remove="Logos\RWAs\tlt.png" />
+    <None Remove="Logos\RWAs\tmo.png" />
+    <None Remove="Logos\RWAs\tmus.png" />
+    <None Remove="Logos\RWAs\tsla.png" />
+    <None Remove="Logos\RWAs\txn.png" />
+    <None Remove="Logos\RWAs\uber.png" />
+    <None Remove="Logos\RWAs\unh.png" />
+    <None Remove="Logos\RWAs\unp.png" />
+    <None Remove="Logos\RWAs\urth.png" />
+    <None Remove="Logos\RWAs\v.png" />
+    <None Remove="Logos\RWAs\vfs.png" />
+    <None Remove="Logos\RWAs\vgsh.png" />
+    <None Remove="Logos\RWAs\voo.png" />
+    <None Remove="Logos\RWAs\vti.png" />
+    <None Remove="Logos\RWAs\vz.png" />
+    <None Remove="Logos\RWAs\wfc.png" />
+    <None Remove="Logos\RWAs\wmt.png" />
+    <None Remove="Logos\RWAs\wti.png" />
+    <None Remove="Logos\RWAs\xagg.png" />
+    <None Remove="Logos\RWAs\xau.png" />
+    <None Remove="Logos\RWAs\xbr.png" />
+    <None Remove="Logos\RWAs\xg.png" />
+    <None Remove="Logos\RWAs\xom.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="favicon-new.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -140,6 +251,324 @@
     <Resource Include="Logos\Exchanges\Velar-source.svg" />
     <Resource Include="Logos\Exchanges\velodrome.svg" />
     <Resource Include="Logos\Exchanges\Wanswap.svg" />
+    <Content Include="Logos\RWAs\aapl.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\abbv.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\abt.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\adbe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\amat.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\amd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\amgn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\amzn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\arkb.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\aud.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\avgo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\axp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\bac.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\beth.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\bito.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\blk.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\brkb.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\brl.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\cad.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\cat.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\chf.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\cmcsa.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\cme.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\cny.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\coin.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\cop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\cost.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\crm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\csco.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\cvx.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\dhr.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\dis.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\eem.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\etha.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\eur.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\fbtc.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\gbp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\gbtc.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\gme.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\goog.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\govt.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\gs.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\hd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\hodl.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\hood.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ibit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ibm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\intc.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\intu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ivv.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\jnj.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\jpm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\jpy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ko.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\lly.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ma.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\mcd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\meta.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\mrk.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ms.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\msft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\mstr.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\mu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\nee.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\nflx.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ng.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\ngn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\nike.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\now.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\nvda.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\orcl.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\pep.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\pfe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\pg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\pm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\pypl.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\qcom.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\qqq.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\rtx.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\schw.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\shy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\spy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\tlt.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\tmo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\tmus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\tsla.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\txn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\uber.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\unh.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\unp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\urth.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\v.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\vfs.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\vgsh.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\voo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\vti.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\vz.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\wfc.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\wmt.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\wti.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\xagg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\xau.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\xbr.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\xg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Logos\RWAs\xom.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

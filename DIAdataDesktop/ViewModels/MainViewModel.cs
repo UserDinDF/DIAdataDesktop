@@ -23,6 +23,7 @@ namespace DIAdataDesktop.ViewModels
         public ExchangesViewModel ExchangesVm { get; }
 
         public StartPageViewModel StartPageVm { get; }
+        public RwaViewModel RwaVm { get; }
 
         public ObservableCollection<string> Watchlist { get; } = new()
         {
@@ -64,7 +65,9 @@ namespace DIAdataDesktop.ViewModels
 
             QuotedAssets = new QuotedAssetsViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             ExchangesVm = new ExchangesViewModel(_api, SetBusyFromChild, SetErrorFromChild);
+            RwaVm = new RwaViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             StartPageVm = new StartPageViewModel(QuotedAssets, ExchangesVm);
+      
 
             WatchlistView = CollectionViewSource.GetDefaultView(Watchlist);
             WatchlistView.Filter = o =>
@@ -92,11 +95,15 @@ namespace DIAdataDesktop.ViewModels
             {
                 SetBusyFromShell(true);
 
-                await QuotedAssets.InitializeAsync();     
-                await ExchangesVm.InitializeAsync();     
+                await QuotedAssets.InitializeAsync();
+                await ExchangesVm.InitializeAsync();
+                await RwaVm.InitializeAsync();
 
-                await QuotedAssets.LoadQuotedAssetsAsync(); 
-                await StartPageVm.InitializeAsync();      
+                await QuotedAssets.LoadQuotedAssetsAsync();
+
+                await ExchangesVm.RefreshSnapshotAsync();
+
+                await StartPageVm.InitializeAsync();
 
                 LastUpdate = DateTimeOffset.Now;
             }
@@ -165,16 +172,7 @@ namespace DIAdataDesktop.ViewModels
                 Error = null;
 
                 await QuotedAssets.LoadQuotedAssetsAsync();
-
-                if (isAuto)
-                {
-                    await ExchangesVm.RefreshSnapshotAsync();
-                }
-                else
-                {
-                    await ExchangesVm.RefreshSnapshotAsync();
-                }
-
+                await ExchangesVm.RefreshSnapshotAsync();
 
                 await StartPageVm.InitializeAsync();
 
@@ -190,6 +188,7 @@ namespace DIAdataDesktop.ViewModels
                 SetBusyFromShell(false);
             }
         }
+
 
 
         private bool CanRunCommands() => !IsBusy;

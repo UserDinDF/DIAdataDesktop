@@ -47,6 +47,7 @@ namespace DIAdataDesktop
                 "Homepage" => await BuildHomePage(),
                 "QuotedAssets" => await BuildQuotedAssetsPage(),
                 "Exchanges" => BuildExchangesPage(),
+                "RealWorldAssets" => await BuildRWAPage(),
 
                 "DataLibrary" => BuildPlaceholder("Data library", "Choose a module on the left."),
 
@@ -56,6 +57,15 @@ namespace DIAdataDesktop
 
             _pageCache[key] = page;
             MainContent.Content = page;
+        }
+
+        private Task<UIElement> BuildRWAPage()
+        {
+
+            var ctrl = App.Services.GetRequiredService<RwaControl>();
+            ctrl.DataContext = _vm.RwaVm;
+            return Task.FromResult<UIElement>(ctrl);
+
         }
 
         private Task<UIElement> BuildHomePage()
