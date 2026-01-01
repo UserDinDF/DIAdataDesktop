@@ -46,7 +46,7 @@ namespace DIAdataDesktop.Views.Controls
                 _selectedTradeSource = value;
                 OnPropertyChanged(nameof(SelectedTradeSource));
                 RefreshTradesFilter();
-                UpdateMarketStats(); // because stats depend on visible trades (optional)
+                UpdateMarketStats(); 
             }
         }
 
@@ -64,7 +64,6 @@ namespace DIAdataDesktop.Views.Controls
             }
         }
 
-        // ========= Auto refresh =========
         public ObservableCollection<RefreshPeriodOption> RefreshPeriods { get; } = new()
         {
             new RefreshPeriodOption("5 sec",  TimeSpan.FromSeconds(5)),
@@ -136,17 +135,13 @@ namespace DIAdataDesktop.Views.Controls
             set { _lastTradesStatus = value; OnPropertyChanged(nameof(LastTradesStatus)); }
         }
 
-        // ========= Right panel: Quotation analytics =========
 
         public int AssetDecimals
         {
             get
             {
-                // best effort: try to infer from first trade tokens if available
                 if (DataContext is DiaQuotedAssetRow row)
                 {
-                    // If you have Decimals directly on row, replace this
-                    // e.g. return row.Decimals;
                     var anyToken = LastTrades.FirstOrDefault()?.QuoteToken ?? LastTrades.FirstOrDefault()?.BaseToken;
                     if (anyToken?.Decimals > 0) return anyToken.Decimals;
                 }

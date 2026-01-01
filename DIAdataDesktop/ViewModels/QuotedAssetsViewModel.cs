@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DIAdataDesktop.Data;
 using DIAdataDesktop.Models;
 using DIAdataDesktop.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +21,9 @@ namespace DIAdataDesktop.ViewModels
         private readonly Action<bool> _setBusy;
         private readonly Action<string?> _setError;
         private readonly Dispatcher _ui;
+
+        private readonly FavoritesRepository _favoritesRepo;
+        private HashSet<string> _favoriteKeys = new(StringComparer.OrdinalIgnoreCase);
 
         private CancellationTokenSource? _loadCts;
         private CancellationTokenSource? _reloadDebounceCts;
@@ -72,6 +77,10 @@ namespace DIAdataDesktop.ViewModels
             _setBusy = setBusy;
             _setError = setError;
             _ui = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+
+            var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DIAdataDesktop", "diadata.local.db");
+
+            _favoritesRepo = new FavoritesRepository(dbPath);
         }
 
         private static string KeyOf(DiaQuotedAsset a) => $"{(a.Asset.Blockchain ?? "").Trim()}|{(a.Asset.Address ?? "").Trim()}".ToLowerInvariant();
@@ -181,6 +190,22 @@ namespace DIAdataDesktop.ViewModels
                 });
             }
         }
+        public async Task LoadFavoritesAsync(CancellationToken ct = default)
+        {
+            await _favoritesRepo.EnsureCreatedAsync(ct);
+
+            _favoriteKeys = await _favoritesRepo.GetKeysAsync("token", ct);
+
+            await _ui.InvokeAsync(() =>
+            {
+                foreach (var r in _allRows)
+                {
+                    var key = FavoritesRepository.MakeTokenKey(r.Blockchain, r.Address);
+                    r.IsFavorite = _favoriteKeys.Contains(key);
+                }
+            });
+        }
+
 
         partial void OnSearchTextChanged(string value)
         {
@@ -372,7 +397,50 @@ namespace DIAdataDesktop.ViewModels
                     NextPageCommand.NotifyCanExecuteChanged();
                 });
             }
+
+            await LoadFavoritesAsync();
         }
+
+        public async Task ToggleFavorite(DiaQuotedAssetRow? row)
+        {
+            if (row == null) return;
+
+            var key = FavoritesRepository.MakeTokenKey(row.Blockchain, row.Address);
+
+            try
+            {
+                row.IsFavorite = !row.IsFavorite;
+
+                if (row.IsFavorite)
+                {
+                    _favoriteKeys.Add(key);
+
+                    await _favoritesRepo.UpsertAsync(
+                        kind: "token",
+                        key: key,
+                        name: row.Name,
+                        extra1: row.Blockchain, 
+                        extra2: row.Address    
+                    );
+                }
+                else
+                {
+                    _favoriteKeys.Remove(key);
+
+                    await _favoritesRepo.RemoveAsync(
+                        kind: "token",
+                        key: key
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                row.IsFavorite = !row.IsFavorite; 
+                _setError(ex.Message);
+            }
+        }
+
+
 
         private void MergeAllRows(List<DiaQuotedAsset> ordered)
         {

@@ -51,6 +51,8 @@ namespace DIAdataDesktop.Models
         [ObservableProperty] private int cexPairsVerified;
         [ObservableProperty] private int cexExchangesCount;
         [ObservableProperty] private int cexPairsByExchangeMax;
+        [ObservableProperty] private bool isFavorite;
+        public string Key => $"{(Blockchain ?? "").Trim().ToLowerInvariant()}|{(Address ?? "").Trim().ToLowerInvariant()}";
 
         public string Symbol => Quotation?.Symbol ?? Asset?.Symbol ?? "";
         public string Name => Quotation?.Name ?? Asset?.Name ?? "";

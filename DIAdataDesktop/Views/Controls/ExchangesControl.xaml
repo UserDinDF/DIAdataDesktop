@@ -1,16 +1,15 @@
 ﻿<UserControl x:Class="DIAdataDesktop.Views.Controls.ExchangesControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:local="clr-namespace:DIAdataDesktop.Views.Controls"
              xmlns:svg="http://sharpvectors.codeplex.com/runtime/"
              xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
 
+    <UserControl.Resources>
         <Style x:Key="CardButton" TargetType="Border">
             <Setter Property="Background" Value="#111B35"/>
             <Setter Property="BorderBrush" Value="#1E2A46"/>
@@ -65,7 +64,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <StackPanel Grid.Row="0">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Exchanges" Foreground="#E5E7EB" FontSize="22" FontWeight="SemiBold"/>
@@ -79,7 +77,6 @@
 
             <TextBlock Text="{Binding StatusText}" Foreground="#94A3B8" Margin="0,3,0,0"/>
 
-            <!-- Tools row -->
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Center">
                 <Button Content="⟪" Command="{Binding GoToFirstCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,6,0"/>
                 <Button Content="‹ Prev" Command="{Binding PrevPageCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,10,0"/>
@@ -125,7 +122,6 @@
             </StackPanel>
         </StackPanel>
 
-        <!-- Cards -->
         <ListBox Grid.Row="2"
                  ItemsSource="{Binding PagedRows}"
                  Background="Transparent"
@@ -145,16 +141,16 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Width="340" Height="190"
-                CornerRadius="16"
-                Background="#111B35"
-                BorderBrush="#1E2A46"
-                BorderThickness="1"
-                Padding="16">
+                            CornerRadius="16"
+                            Background="#111B35"
+                            BorderBrush="#1E2A46"
+                            BorderThickness="1"
+                            Padding="16">
 
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="12"/>
+                                <RowDefinition Height="10"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="16"/>
                                 <RowDefinition Height="Auto"/>
@@ -165,51 +161,74 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- TOP: Logo + Name -->
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.ColumnSpan="2">
-                                <!-- SVG Logo (dein Loaded-Handler) -->
-                                <Image Width="26" 
-                           Loaded="SvgLogo_Loaded"
-                           Stretch="Uniform"/>
+                            <Grid Grid.Row="0" Grid.ColumnSpan="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="{Binding Name}"
-                               Margin="10,0,0,0"
-                               Foreground="#E5E7EB"
-                               FontSize="22"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
-                            </StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Width="26"
+                                           Loaded="SvgLogo_Loaded"
+                                           Stretch="Uniform"/>
 
-                            <!-- Trades -->
-                            <StackPanel Grid.Row="2">
-                                <TextBlock Text="Trades 24h"
-                               Foreground="#94A3B8"
-                               FontSize="12"
-                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Name}"
+                                               Margin="10,0,0,0"
+                                               Foreground="#E5E7EB"
+                                               FontSize="22"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
 
+                                <Button Style="{StaticResource StarIconButton}" Grid.Column="1"
+                                        Margin="0,0,0,0"
+                                        Click="FavoriteBtn_Click"
+                                        Tag="{Binding}">
+                                    <materialDesign:PackIcon Width="16" Height="16">
+                                        <materialDesign:PackIcon.Style>
+                                            <Style TargetType="materialDesign:PackIcon">
+                                                <Setter Property="Kind" Value="StarOutline"/>
+                                                <Setter Property="Foreground" Value="#64748B"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                        <Setter Property="Kind" Value="Star"/>
+                                                        <Setter Property="Foreground" Value="#FBBF24"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:PackIcon.Style>
+                                    </materialDesign:PackIcon>
+                                </Button>
+                                
+                                <Button Grid.Column="2"
+                                        Style="{StaticResource StarIconButton}"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Click="OpenExchangeSource_Click"
+                                        Tag="{Binding}">
+                                    <materialDesign:PackIcon Kind="OpenInNew" Width="16" Height="16" Foreground="#64748B"/>
+                                </Button>
+                            </Grid>
+
+                            <StackPanel Grid.Row="2" Grid.Column="0">
+                                <TextBlock Text="Trades 24h" Foreground="#94A3B8" FontSize="12" FontWeight="SemiBold"/>
                                 <TextBlock Text="{Binding Trades, StringFormat={}{0:N0}}"
-                               Foreground="#E5E7EB"
-                               FontSize="22"
-                               FontWeight="SemiBold"
-                               Margin="0,6,0,0"/>
+                                           Foreground="#E5E7EB"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Margin="0,6,0,0"/>
                             </StackPanel>
 
-                            <!-- Volume24h -->
-                            <StackPanel Grid.Column="1" Grid.Row="2" Margin="0,12,0,0">
-                                <TextBlock Text="Volume 24h (USD)"
-        Foreground="#94A3B8"
-        FontSize="12"
-        FontWeight="SemiBold"/>
+                            <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,12,0,0">
+                                <TextBlock Text="Volume 24h (USD)" Foreground="#94A3B8" FontSize="12" FontWeight="SemiBold"/>
                                 <TextBlock Text="{Binding Volume24h, StringFormat=$ {0:N0}}"
-        Foreground="#E5E7EB"
-        FontSize="14"
-        FontWeight="SemiBold"
-        Margin="0,6,0,0"/>
+                                           Foreground="#E5E7EB"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Margin="0,6,0,0"/>
                             </StackPanel>
 
-
-
-                            <!-- Bottom 3 columns -->
                             <Grid Grid.Row="4" Grid.ColumnSpan="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -217,70 +236,48 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <!-- Type -->
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Type"
-                                   Foreground="#94A3B8"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"/>
+                                    <TextBlock Text="Type" Foreground="#94A3B8" FontSize="12" FontWeight="SemiBold"/>
                                     <TextBlock Text="{Binding Type}"
-                                   Foreground="#E5E7EB"
-                                   FontSize="14"
-                                   FontWeight="SemiBold"
-                                   Margin="0,6,0,0"/>
+                                               Foreground="#E5E7EB"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Margin="0,6,0,0"/>
                                 </StackPanel>
 
-                                <!-- Network (mit Icon wie im Screenshot) -->
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock Text="Network"
-                                   Foreground="#94A3B8"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"/>
-
+                                    <TextBlock Text="Network" Foreground="#94A3B8" FontSize="12" FontWeight="SemiBold"/>
                                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                                         <Border Width="18" Height="18"
-                                    CornerRadius="9"
-                                    Background="#0B1220"
-                                    BorderBrush="#24314E"
-                                    BorderThickness="1"
-                                    VerticalAlignment="Center">
-                                            <!-- kleines “Chain” Icon – simple, ohne converter -->
+                                                CornerRadius="9"
+                                                Background="#0B1220"
+                                                BorderBrush="#24314E"
+                                                BorderThickness="1"
+                                                VerticalAlignment="Center">
                                             <TextBlock Text="⟠"
-                                           Foreground="#E5E7EB"
-                                           FontSize="12"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
+                                                       Foreground="#E5E7EB"
+                                                       FontSize="12"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
                                         </Border>
 
                                         <TextBlock Text="{Binding Blockchain}"
-                                       Foreground="#E5E7EB"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Margin="8,0,0,0"
-                                       VerticalAlignment="Center"/>
+                                                   Foreground="#E5E7EB"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Margin="8,0,0,0"
+                                                   VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Pairs -->
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Pairs"
-                                   Foreground="#94A3B8"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"/>
+                                    <TextBlock Text="Pairs" Foreground="#94A3B8" FontSize="12" FontWeight="SemiBold"/>
                                     <TextBlock Text="{Binding Pairs, StringFormat={}{0:N0}}"
-                                   Foreground="#E5E7EB"
-                                   FontSize="14"
-                                   FontWeight="SemiBold"
-                                   Margin="0,6,0,0"/>
+                                               Foreground="#E5E7EB"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Margin="0,6,0,0"/>
                                 </StackPanel>
-
-                           
-
                             </Grid>
                         </Grid>
                     </Border>

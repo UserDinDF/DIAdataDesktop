@@ -63,5 +63,17 @@ namespace DIAdataDesktop.Views.Controls
             win.Show();
             win.Activate();
         }
+
+        private async void FavoriteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true; // verhindert TokenCard_Click
+
+            if (DataContext is not QuotedAssetsViewModel vm) return;
+
+            if (sender is Button b && b.DataContext is DiaQuotedAssetRow row)
+            {
+                await vm.ToggleFavorite(row);
+            }
+        }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DIAdataDesktop.Data;
 using DIAdataDesktop.Models;
 using DIAdataDesktop.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +26,8 @@ namespace DIAdataDesktop.ViewModels
         public readonly List<DiaExchange> _all = new();
         private List<DiaExchange> _filtered = new();
 
+        private readonly FavoritesRepository _favoritesRepo;
+        private HashSet<string> _favoriteKeys = new(StringComparer.OrdinalIgnoreCase);
         public ObservableCollection<DiaExchange> PagedRows { get; } = new();
 
         [ObservableProperty] private string searchText = "";
@@ -50,7 +54,23 @@ namespace DIAdataDesktop.ViewModels
             _setBusy = setBusy;
             _setError = setError;
             _ui = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+
+            var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DIAdataDesktop", "diadata.local.db");
+            _favoritesRepo = new FavoritesRepository(dbPath);
         }
+
+        private async Task LoadFavoritesAsync(CancellationToken ct = default)
+        {
+            await _favoritesRepo.EnsureCreatedAsync(ct);
+            _favoriteKeys = await _favoritesRepo.GetKeysAsync("exchange", ct);
+
+            await _ui.InvokeAsync(() =>
+            {
+                foreach (var ex in _all)
+                    ex.IsFavorite = _favoriteKeys.Contains(ex.FavKey);
+            });
+        }
+
 
         partial void OnSearchTextChanged(string value)
         {
@@ -111,20 +131,17 @@ namespace DIAdataDesktop.ViewModels
 
                 var list = await _api.GetExchangesAsync(ct);
 
-                // ✅ sinnvoll sortieren: zuerst nach Volume24h, dann Name
                 var ordered = list
                     .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Name))
                     .OrderByDescending(x => x.Volume24h)
                     .ToList();
 
 
-                //set logos
                 foreach (var item in ordered)
                 {
-                    //ex.LogoSvgUri = new Uri($"pack://application:,,,/Logos/Exchanges/{ex.Name}.svg", UriKind.Absolute);
-
                     item.LogoSvgPath = new Uri($"pack://application:,,,/Logos/Exchanges/{item.Name}.svg", UriKind.Absolute);
                 }
+
 
                 await _ui.InvokeAsync(() =>
                 {
@@ -161,7 +178,42 @@ namespace DIAdataDesktop.ViewModels
                     NextPageCommand.NotifyCanExecuteChanged();
                 });
             }
+
+            await LoadFavoritesAsync(ct);
         }
+
+        public async Task ToggleFavorite(DiaExchange? ex)
+        {
+            if (ex == null) return;
+
+            try
+            {
+                ex.IsFavorite = !ex.IsFavorite;
+
+                if (ex.IsFavorite)
+                {
+                    _favoriteKeys.Add(ex.FavKey);
+                    await _favoritesRepo.UpsertAsync(
+                        kind: "exchange",
+                        key: ex.FavKey,
+                        name: ex.Name,
+                        extra1: ex.Type,
+                        extra2: ex.Blockchain);
+                }
+                else
+                {
+                    _favoriteKeys.Remove(ex.FavKey);
+                    await _favoritesRepo.RemoveAsync("exchange", ex.FavKey);
+                }
+            }
+            catch (Exception err)
+            {
+                ex.IsFavorite = !ex.IsFavorite;
+                _setError(err.Message);
+            }
+        }
+
+
 
         [RelayCommand]
         public async Task RefreshAsync()

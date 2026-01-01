@@ -8,8 +8,6 @@
              Background="Transparent">
 
     <UserControl.Resources>
-
-        <!-- styles (deine) -->
         <Style x:Key="TokenCardButton" TargetType="Button">
             <Setter Property="Background" Value="#111B35"/>
             <Setter Property="BorderBrush" Value="#1E2A46"/>
@@ -95,7 +93,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -203,7 +200,26 @@
                                 </StackPanel>
 
                                 <StackPanel  Grid.Column="3" Orientation="Horizontal">
-                                    <Button Style="{StaticResource   MaterialDesignRaisedSecondaryDarkButton}" Padding="0" BorderBrush="Transparent" Height="16" VerticalAlignment="Center" Background="Transparent" Margin="0,-15,4,0" x:Name="openInWindowBtn" Click="openInWindowBtn_Click">
+                                    <Button Style="{StaticResource StarIconButton}"
+                                            Margin="0,-15,6,0"
+                                            Click="FavoriteBtn_Click"
+                                            Tag="{Binding}">
+                                        <materialDesign:PackIcon Width="16" Height="16">
+                                            <materialDesign:PackIcon.Style>
+                                                <Style TargetType="materialDesign:PackIcon">
+                                                    <Setter Property="Kind" Value="StarOutline"/>
+                                                    <Setter Property="Foreground" Value="#64748B"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                            <Setter Property="Kind" Value="Star"/>
+                                                            <Setter Property="Foreground" Value="#FBBF24"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </materialDesign:PackIcon.Style>
+                                        </materialDesign:PackIcon>
+                                    </Button>
+                                    <Button Style="{StaticResource MaterialDesignRaisedSecondaryDarkButton}" Padding="0" BorderBrush="Transparent" Height="16" VerticalAlignment="Center" Background="Transparent" Margin="2,-18,8,0" x:Name="openInWindowBtn" Click="openInWindowBtn_Click">
                                         <materialDesign:PackIcon Kind="OpenInNew" Width="16" Height="16" Foreground="#64748B"/>
                                     </Button>
                                     <Border Grid.Column="3" BorderBrush="White" BorderThickness="1" CornerRadius="5" VerticalAlignment="Top">
@@ -212,7 +228,6 @@
                                 </StackPanel>
                             </Grid>
 
-                            <!-- Body -->
                             <Grid Grid.Row="1" Margin="0,10,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
