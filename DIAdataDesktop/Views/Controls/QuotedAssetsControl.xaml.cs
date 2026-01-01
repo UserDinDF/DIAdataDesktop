@@ -32,13 +32,12 @@ namespace DIAdataDesktop.Views.Controls
 
             if (btn.DataContext is DiaQuotedAssetRow row)
             {
-                var exchangeByAsset = await viewModel._api.GetPairsAssetCexAsync(row.Blockchain, row.Address);
-                row.CexPairs = new System.Collections.ObjectModel.ObservableCollection<DiaCexPairsByAssetRow>(exchangeByAsset);
+                //var exchangeByAsset = await viewModel._api.GetPairsAssetCexAsync(row.Blockchain, row.Address);
+                //row.CexPairs = new System.Collections.ObjectModel.ObservableCollection<DiaCexPairsByAssetRow>(exchangeByAsset);
 
                 if (Window.GetWindow(this) is MainWindow mw)
                 {
                     mw.OpenAssetDetails(row);
-                    return;
                 }
             }
 

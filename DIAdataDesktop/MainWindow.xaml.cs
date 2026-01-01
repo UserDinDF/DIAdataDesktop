@@ -109,13 +109,65 @@ namespace DIAdataDesktop
             };
         }
 
-        public void OpenAssetDetails(DiaQuotedAssetRow row)
+        public async Task OpenAssetDetails(DiaQuotedAssetRow row)
         {
             if (row == null) return;
             MainViewModel mainViewModel = App.Services.GetRequiredService<MainViewModel>();
             // aktuelle Seite merken (damit Back exakt zurück geht)
             _contentHistory.Push(MainContent.Content);
-           
+           var alleExchanges = mainViewModel.ExchangesVm._all;
+            var pairsAssetCex = await mainViewModel._api.GetPairsAssetCexAsync(row.Blockchain, row.Address);
+            foreach (var exchange in alleExchanges)
+            {
+                //var pairCex = await mainViewModel._api.GetPairsCexAsync(exchange.Name);
+                
+                //foreach (var item in pairCex)
+                //{
+                //    //if (item.Symbol == row.Symbol)
+                //    //{
+                //    //    var test = await mainViewModel._api.GetQuotationByAddressAsync(item.UnderlyingPair.BaseToken.Blockchain, item.UnderlyingPair.BaseToken.Address);
+                //    //}
+                //}
+                //var addesQuotations = new List<DiaQuotedAsset>();
+
+                //addesQuotations = await mainViewModel._api.GetQuotedAssetsAsync(row.Blockchain);
+                //double addedSUm = 0;
+                //foreach (var item in pairsAssetCex)
+                //{
+                //    if (item.Symbol == row.Symbol)
+                //    {
+
+                //        var test2 = await mainViewModel._api.GetPairsAssetCexAsync(item.UnderlyingPair.BaseToken.Blockchain, item.UnderlyingPair.BaseToken.Address);
+
+                //        //foreach (var added in test2)
+                //        //{
+                //        //    if (added.Symbol == row.Symbol)
+                //        //    {
+                //        //        var quotation = await mainViewModel._api.GetQuotationByAddressAsync(added.UnderlyingPair.QuoteToken.Blockchain, added.UnderlyingPair.QuoteToken.Address);
+                //        //        addedSUm += quotation.VolumeYesterdayUSD;
+
+                //        //    }
+
+                //        //}
+                //    }
+                }
+            
+
+
+            //var sym = (row.Symbol ?? "").Trim();
+            //var totalMoney = addesQuotations
+            //    .Where(q =>
+            //        string.Equals(
+            //            (q?.Asset?.Symbol ?? "").Trim(),
+            //            sym,
+            //            StringComparison.OrdinalIgnoreCase))
+            //    .Sum(q => q?.Volume ?? 0d);
+
+
+            foreach (var item in alleExchanges)
+            {
+
+            }
             var details =new QuotedAssetDetailsControl(mainViewModel._api);
             details.SetAsset(row);
             details.BackRequested += (_, __) => GoBack();

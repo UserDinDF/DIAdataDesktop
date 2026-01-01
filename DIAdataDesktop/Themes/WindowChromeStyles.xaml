@@ -5,7 +5,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:DIAdataDesktop.Helpers">
 
-    <!-- Colors -->
     <SolidColorBrush x:Key="WinBg" Color="#0B1220"/>
     <SolidColorBrush x:Key="WinTitleBg" Color="#0A1630"/>
     <SolidColorBrush x:Key="WinStroke" Color="#1F2A44"/>
@@ -16,7 +15,6 @@
     <SolidColorBrush x:Key="WinPrimary" Color="#2D64E3"/>
     <SolidColorBrush x:Key="WinDanger" Color="#7F1D1D"/>
 
-    <!-- Titlebar button -->
     <Style x:Key="TitleBarBtn" TargetType="Button" BasedOn="{x:Null}">
         <Setter Property="Width" Value="30"/>
         <Setter Property="Height" Value="25"/>
@@ -93,14 +91,12 @@
         </Setter>
     </Style>
 
-    <!-- ✅ Custom Window Style (NO white top line) -->
     <Style x:Key="CustomWindowStyle" TargetType="Window">
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="ResizeMode" Value="CanResize"/>
         <Setter Property="Background" Value="{StaticResource WinBg}"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
 
-        <!-- ✅ This removes the DWM/white top strip -->
         <Setter Property="shell:WindowChrome.WindowChrome">
             <Setter.Value>
                 <shell:WindowChrome
@@ -115,7 +111,6 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Window">
-                    <!-- Outer stroke drawn by us (not Windows) -->
                     <Border Background="#0B1731"
                             BorderBrush="#0B1731"
                             BorderThickness="1"
@@ -128,7 +123,6 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <!-- TitleBar (fill rounded top too -> no seam) -->
                             <Border Grid.Row="0"
                                     Background="{StaticResource WinTitleBg}"
                                     CornerRadius="15,15,0,0"
@@ -149,10 +143,6 @@
                                                    Foreground="{StaticResource WinText}"
                                                    FontSize="13"
                                                    FontWeight="SemiBold"/>
-                                        <TextBlock Text="  •  DIAdata"
-                                                   Foreground="{StaticResource WinMuted}"
-                                                   FontSize="12"
-                                                   Margin="10,0,0,0"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1"
@@ -169,7 +159,6 @@
                                 </Grid>
                             </Border>
 
-                            <!-- Content -->
                             <AdornerDecorator Grid.Row="1">
                                 <ContentPresenter Content="{TemplateBinding Content}"/>
                             </AdornerDecorator>

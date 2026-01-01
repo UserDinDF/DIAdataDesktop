@@ -21,7 +21,7 @@ namespace DIAdataDesktop.ViewModels
         private readonly Action<string?> _setError;
         private readonly Dispatcher _ui;
 
-        private readonly List<DiaExchange> _all = new();
+        public readonly List<DiaExchange> _all = new();
         private List<DiaExchange> _filtered = new();
 
         public ObservableCollection<DiaExchange> PagedRows { get; } = new();

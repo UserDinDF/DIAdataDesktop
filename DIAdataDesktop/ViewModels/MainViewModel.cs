@@ -47,7 +47,7 @@ namespace DIAdataDesktop.ViewModels
             "Off", "10s", "30s", "60s", "120s"
         };
 
-        [ObservableProperty] private string selectedAutoRefreshInterval = "30s";
+        [ObservableProperty] private string selectedAutoRefreshInterval = "120s";
         [ObservableProperty] private bool isAutoRefreshEnabled = true;
         [ObservableProperty] private string selectedNav = "Quotation";
         
