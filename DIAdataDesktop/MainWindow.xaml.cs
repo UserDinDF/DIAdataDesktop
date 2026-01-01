@@ -28,7 +28,7 @@ namespace DIAdataDesktop
             _vm = App.Services.GetRequiredService<MainViewModel>();
             DataContext = _vm;
 
-            NavigateTo("Quotation");
+            NavigateTo("Homepage");
         }
 
         private void Nav_Click(object sender, RoutedEventArgs e)
@@ -51,13 +51,6 @@ namespace DIAdataDesktop
                 "DataLibrary" => BuildPlaceholder("Data library", "Choose a module on the left."),
 
                 "DigitalAssets" => await BuildQuotedAssetsPage(),
-                "RealWorldAssets" => BuildPlaceholder("Real-world assets", "Coming soon..."),
-                "Randomness" => BuildPlaceholder("Randomness", "Coming soon..."),
-                "OraclePlayground" => BuildPlaceholder("Oracle playground", "Coming soon..."),
-                "DataSources" => BuildPlaceholder("Data sources", "Coming soon..."),
-                "SupportedChains" => BuildPlaceholder("Supported chains", "Coming soon..."),
-                "Staking" => BuildPlaceholder("Staking", "Coming soon..."),
-                "Bridge" => BuildPlaceholder("Bridge", "Coming soon..."),
                 _ => BuildPlaceholder("Unknown", key)
             };
 
@@ -65,13 +58,11 @@ namespace DIAdataDesktop
             MainContent.Content = page;
         }
 
-        private async Task<UIElement> BuildHomePage()
+        private Task<UIElement> BuildHomePage()
         {
             var ctrl = App.Services.GetRequiredService<StartPageControl>();
             ctrl.DataContext = _vm.StartPageVm;
-            await _vm.StartPageVm.InitializeAsync();
-            return ctrl;
-
+            return Task.FromResult<UIElement>(ctrl);
         }
 
         private UIElement BuildExchangesPage()
@@ -81,14 +72,12 @@ namespace DIAdataDesktop
             return ctrl;
         }
 
-        private async Task<UIElement> BuildQuotedAssetsPage()
+        private Task<UIElement> BuildQuotedAssetsPage()
         {
             var ctrl = App.Services.GetRequiredService<QuotedAssetsControl>();
             ctrl.DataContext = _vm.QuotedAssets;
-            await _vm.QuotedAssets.InitializeAsync();
-            return ctrl;
+            return Task.FromResult<UIElement>(ctrl);
         }
-
 
 
         private UIElement BuildPlaceholder(string title, string subtitle)

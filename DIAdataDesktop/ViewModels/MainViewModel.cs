@@ -48,7 +48,7 @@ namespace DIAdataDesktop.ViewModels
             "Off", "10s", "30s", "60s", "120s"
         };
 
-        [ObservableProperty] private string selectedAutoRefreshInterval = "120s";
+        [ObservableProperty] private string selectedAutoRefreshInterval = "10s";
         [ObservableProperty] private bool isAutoRefreshEnabled = true;
         [ObservableProperty] private string selectedNav = "Quotation";
         
@@ -83,9 +83,27 @@ namespace DIAdataDesktop.ViewModels
 
             ApplyTimerSettings();
 
-            _ = RefreshAllAsync();
+            _ = InitializeShellAsync();
+        }
 
-            BuildExchangesVm();
+        private async Task InitializeShellAsync()
+        {
+            try
+            {
+                SetBusyFromShell(true);
+
+                await QuotedAssets.InitializeAsync();     
+                await ExchangesVm.InitializeAsync();     
+
+                await QuotedAssets.LoadQuotedAssetsAsync(); 
+                await StartPageVm.InitializeAsync();      
+
+                LastUpdate = DateTimeOffset.Now;
+            }
+            finally
+            {
+                SetBusyFromShell(false);
+            }
         }
 
         public async Task BuildExchangesVm()
@@ -99,7 +117,6 @@ namespace DIAdataDesktop.ViewModels
         {
             OnPropertyChanged(nameof(StatusChipText));
             RefreshAllCommand.NotifyCanExecuteChanged();
-            LoadMetaCommand.NotifyCanExecuteChanged();
         }
 
         partial void OnLastUpdateChanged(DateTimeOffset? value)
@@ -149,7 +166,20 @@ namespace DIAdataDesktop.ViewModels
 
                 await QuotedAssets.LoadQuotedAssetsAsync();
 
+                if (isAuto)
+                {
+                    await ExchangesVm.RefreshSnapshotAsync();
+                }
+                else
+                {
+                    await ExchangesVm.RefreshSnapshotAsync();
+                }
+
+
+                await StartPageVm.InitializeAsync();
+
                 LastUpdate = DateTimeOffset.Now;
+                OnPropertyChanged(nameof(LastUpdateChipText));
             }
             catch (Exception ex)
             {
@@ -161,28 +191,6 @@ namespace DIAdataDesktop.ViewModels
             }
         }
 
-        [RelayCommand(CanExecute = nameof(CanRunCommands))]
-        private async Task LoadMetaAsync()
-        {
-            try
-            {
-                SetBusyFromShell(true);
-                Error = null;
-
-               // var chains = await _api.GetBlockchainsAsync(CancellationToken.None);
-                //var exchanges = await _api.GetExchangesAsync(CancellationToken.None);
-
-             //  QuotedAssets.SetMeta(chains);
-            }
-            catch (Exception ex)
-            {
-                Error = ex.Message;
-            }
-            finally
-            {
-                SetBusyFromShell(false);
-            }
-        }
 
         private bool CanRunCommands() => !IsBusy;
 
@@ -193,6 +201,7 @@ namespace DIAdataDesktop.ViewModels
         {
             IsBusy = busy;
             QuotedAssets.IsBusy = busy;
+            ExchangesVm.IsBusy = busy;
         }
     }
 }

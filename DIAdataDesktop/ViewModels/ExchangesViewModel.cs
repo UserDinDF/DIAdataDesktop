@@ -43,7 +43,6 @@ namespace DIAdataDesktop.ViewModels
         [ObservableProperty] private bool isBusy;
         [ObservableProperty] private string? error;
 
-        // optional: PageSizes wie bei dir
         public ObservableCollection<int> PageSizes { get; } = new() { 15, 30, 60, 120 };
 
         private bool _loadedOnce;
@@ -182,6 +181,101 @@ namespace DIAdataDesktop.ViewModels
             await LoadFavoritesAsync(ct);
         }
 
+      
+        private void MergeAllInPlace(List<DiaExchange> latest)
+        {
+            var map = _all.ToDictionary(
+                x => (x.Name ?? "").Trim(),
+                x => x,
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var incoming in latest)
+            {
+                var key = (incoming.Name ?? "").Trim();
+                if (string.IsNullOrWhiteSpace(key)) continue;
+
+                if (map.TryGetValue(key, out var existing))
+                {
+                    existing.Type = incoming.Type;
+                    existing.Blockchain = incoming.Blockchain;
+                    existing.Volume24h = incoming.Volume24h;
+                    existing.ScraperActive = incoming.ScraperActive;
+                    existing.Name = incoming.Name;
+                    existing.Pairs = incoming.Pairs;
+                    existing.Type = incoming.Type;
+                    existing.Trades = incoming.Trades;
+
+                    existing.LogoSvgPath ??= new Uri($"pack://application:,,,/Logos/Exchanges/{existing.Name}.svg", UriKind.Absolute);
+                }
+                else
+                {
+                    incoming.LogoSvgPath = new Uri($"pack://application:,,,/Logos/Exchanges/{incoming.Name}.svg", UriKind.Absolute);
+                    _all.Add(incoming);
+                    map[key] = incoming;
+                }
+            }
+
+            var alive = new HashSet<string>(latest.Select(x => (x.Name ?? "").Trim()), StringComparer.OrdinalIgnoreCase);
+            _all.RemoveAll(x => !alive.Contains((x.Name ?? "").Trim()));
+
+            _all.Sort((a, b) => b.Volume24h.CompareTo(a.Volume24h));
+
+            TotalCount = _all.Count;
+        }
+
+        public async Task RefreshSnapshotAsync(CancellationToken ct = default)
+        {
+            try
+            {
+                await _ui.InvokeAsync(() =>
+                {
+                    StatusText = "Refreshing exchanges...";
+                    _setBusy(true);
+                    _setError(null);
+                });
+
+                var list = await _api.GetExchangesAsync(ct);
+
+                var ordered = list
+                    .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Name))
+                    .OrderByDescending(x => x.Volume24h)
+                    .ToList();
+
+                await _ui.InvokeAsync(() =>
+                {
+                    MergeAllInPlace(ordered);
+
+                    ApplyFilterCore();
+                    ApplyPagingCore();
+
+                    StatusText = $"Updated {TotalCount} exchanges.";
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                await _ui.InvokeAsync(() => StatusText = "Canceled.");
+            }
+            catch (Exception ex)
+            {
+                await _ui.InvokeAsync(() =>
+                {
+                    StatusText = "Error";
+                    _setError(ex.Message);
+                });
+            }
+            finally
+            {
+                await _ui.InvokeAsync(() =>
+                {
+                    _setBusy(false);
+                    PrevPageCommand.NotifyCanExecuteChanged();
+                    NextPageCommand.NotifyCanExecuteChanged();
+                });
+            }
+
+            await LoadFavoritesAsync(ct);
+        }
+
         public async Task ToggleFavorite(DiaExchange? ex)
         {
             if (ex == null) return;
@@ -218,7 +312,6 @@ namespace DIAdataDesktop.ViewModels
         [RelayCommand]
         public async Task RefreshAsync()
         {
-            // wenn du wirklich mal refresh willst -> bewusst
             _loadedOnce = false;
             await InitializeAsync();
         }

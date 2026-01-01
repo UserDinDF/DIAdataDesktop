@@ -64,8 +64,8 @@ namespace DIAdataDesktop.ViewModels
             }
         }
 
-        [RelayCommand] private void OpenAssets() => Navigate?.Invoke("assets");
-        [RelayCommand] private void OpenExchanges() => Navigate?.Invoke("exchanges");
+        [RelayCommand] private void OpenAssets() => Navigate?.Invoke("QuotedAssets");
+        [RelayCommand] private void OpenExchanges() => Navigate?.Invoke("Exchanges");
 
         private async Task LoadFavoritesAsync(CancellationToken ct = default)
         {
