@@ -24,7 +24,12 @@ namespace DIAdataDesktop.Models
 
         public decimal Change => Price - PriceYesterday;
 
-        public decimal ChangePct =>
-            PriceYesterday <= 0 ? 0 : (Change / PriceYesterday) * 100m;
+        public decimal ChangePct => PriceYesterday <= 0 ? 0 : (Change / PriceYesterday) * 100m;
+
+        public bool IsFavorite
+        {
+            get => Row.IsFavorite;
+            set => Row.IsFavorite = value;
+        }
     }
 }

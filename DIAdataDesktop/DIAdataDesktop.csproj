@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Logos\dia-icon.svg" />
     <None Remove="Logos\Exchanges\Aerodrome-logo-round %281%29.svg" />
     <None Remove="Logos\Exchanges\Aerodrome-logo-round.svg" />
     <None Remove="Logos\Exchanges\AerodromeSlipstream.svg" />
@@ -86,6 +87,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Logos\dia-icon.svg" />
     <Resource Include="Logos\Exchanges\AerodromeSlipstream.svg" />
     <Resource Include="Logos\Exchanges\apeswap.svg" />
     <Resource Include="Logos\Exchanges\Arthswap.svg" />

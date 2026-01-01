@@ -4,9 +4,10 @@
         xmlns:local="clr-namespace:DIAdataDesktop.Views"
         xmlns:vm="clr-namespace:DIAdataDesktop.ViewModels"
         xmlns:conv="clr-namespace:DIAdataDesktop.Converters"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Style="{StaticResource CustomWindowStyle}"
         Title="Watchlist"
-        Width="420" Height="520"
+        Width="580" Height="520"
         WindowStartupLocation="CenterOwner"
         Background="#0B1220"
         ResizeMode="CanResizeWithGrip"
@@ -55,14 +56,45 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Small icon button for star -->
+        <Style x:Key="StarIconButton" TargetType="Button">
+            <Setter Property="Width" Value="26"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#24314E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#111B35"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#2D64E3"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="8"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -75,46 +107,51 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Watchlist" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock Text="Watchlist (Favorites)" FontSize="16" FontWeight="SemiBold"/>
                     <TextBlock Text="{Binding StatusLine}" Foreground="#94A3B8" FontSize="11"/>
                 </StackPanel>
 
+                
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                        <TextBlock Text="All" Foreground="#94A3B8" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
 
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <ToggleButton Style="{StaticResource ToggleSwitch}"
+                  IsChecked="{Binding ShowOnlyFavorites, Mode=TwoWay}"/>
+
+                        <TextBlock Text="Favs" Foreground="#94A3B8" FontSize="11" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    </StackPanel>
+
+                    
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,10,0">
                         <TextBlock Text="Topmost" Foreground="#94A3B8" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <ToggleButton Style="{StaticResource ToggleSwitch}"
-                  IsChecked="{Binding IsTopmost, Mode=TwoWay}"/>
+                                      IsChecked="{Binding IsTopmost, Mode=TwoWay}"/>
                     </StackPanel>
-                    
-                    <Button Content="Refresh" Padding="10,4" Style="{StaticResource   PrimaryButton}"
-                            Command="{Binding RefreshCommand}"/> 
+
+                    <Button Content="Refresh" Padding="10,4"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding RefreshCommand}"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Column toggles -->
-        <Border Grid.Row="2" CornerRadius="14" Background="#0F1B33" BorderBrush="#1E2A46" BorderThickness="1" Padding="10">
-            <WrapPanel>
-                <CheckBox Content="Yesterday" Foreground="#E5E7EB" Margin="0,0,12,6" IsChecked="{Binding ShowYesterday}"/>
-                <CheckBox Content="Volume" Foreground="#E5E7EB" Margin="0,0,12,6" IsChecked="{Binding ShowVolume}"/>
-                <CheckBox Content="Updated" Foreground="#E5E7EB" Margin="0,0,12,6" IsChecked="{Binding ShowUpdated}"/>
-            </WrapPanel>
-        </Border>
-
-        <!-- Header row -->
-        <Border Grid.Row="4" CornerRadius="14" Background="#111B35" BorderBrush="#1E2A46" BorderThickness="1">
+        <!-- Table -->
+        <Border Grid.Row="2" CornerRadius="14" Background="#111B35" BorderBrush="#1E2A46" BorderThickness="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- table header -->
+                <!-- Header -->
                 <Border Background="#0B1220" BorderBrush="#1E2A46" BorderThickness="0,0,0,1" Padding="8,6">
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="28"/>
+                            <!-- ⭐ -->
                             <ColumnDefinition Width="30"/>
+                            <!-- Icon -->
                             <ColumnDefinition Width="78"/>
                             <ColumnDefinition Width="88"/>
                             <ColumnDefinition Width="74"/>
@@ -124,24 +161,25 @@
                             <ColumnDefinition Width="70"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="" />
-                        <TextBlock Grid.Column="1" Text="Symbol" Style="{StaticResource HeaderText}"/>
-                        <TextBlock Grid.Column="2" Text="Last" Style="{StaticResource HeaderText}"/>
-                        <TextBlock Grid.Column="3" Text="Δ" Style="{StaticResource HeaderText}"/>
-                        <TextBlock Grid.Column="4" Text="Δ%" Style="{StaticResource HeaderText}"/>
+                        <TextBlock Grid.Column="0" Text=""/>
+                        <TextBlock Grid.Column="1" Text=""/>
+                        <TextBlock Grid.Column="2" Text="Symbol" Style="{StaticResource HeaderText}"/>
+                        <TextBlock Grid.Column="3" Text="Last" Style="{StaticResource HeaderText}"/>
+                        <TextBlock Grid.Column="4" Text="Δ" Style="{StaticResource HeaderText}"/>
+                        <TextBlock Grid.Column="5" Text="Δ%" Style="{StaticResource HeaderText}"/>
 
-                        <TextBlock Grid.Column="5" Text="Yesterday" Style="{StaticResource HeaderText}"
+                        <TextBlock Grid.Column="6" Text="Yesterday" Style="{StaticResource HeaderText}"
                                    Visibility="{Binding ShowYesterday, Converter={StaticResource BoolToVis}}"/>
 
-                        <TextBlock Grid.Column="6" Text="Volume" Style="{StaticResource HeaderText}"
+                        <TextBlock Grid.Column="7" Text="Volume" Style="{StaticResource HeaderText}"
                                    Visibility="{Binding ShowVolume, Converter={StaticResource BoolToVis}}"/>
 
-                        <TextBlock Grid.Column="7" Text="Updated" Style="{StaticResource HeaderText}"
+                        <TextBlock Grid.Column="8" Text="Updated" Style="{StaticResource HeaderText}"
                                    Visibility="{Binding ShowUpdated, Converter={StaticResource BoolToVis}}"/>
                     </Grid>
                 </Border>
 
-                <!-- rows -->
+                <!-- Rows -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Rows}">
                         <ItemsControl.ItemTemplate>
@@ -152,7 +190,10 @@
                                     <Border BorderBrush="#1E2A46" BorderThickness="0,0,0,1" Padding="8,7">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="28"/>
+                                                <!-- ⭐ -->
                                                 <ColumnDefinition Width="30"/>
+                                                <!-- Icon -->
                                                 <ColumnDefinition Width="78"/>
                                                 <ColumnDefinition Width="88"/>
                                                 <ColumnDefinition Width="74"/>
@@ -162,26 +203,50 @@
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
 
+                                            <!-- ⭐ Favorite -->
+                                            <Button Grid.Column="0"
+                                                    Style="{StaticResource StarIconButton}"
+                                                    Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding Row}"
+                                                    Focusable="False">
+                                                <materialDesign:PackIcon Width="16" Height="16">
+                                                    <materialDesign:PackIcon.Style>
+                                                        <Style TargetType="materialDesign:PackIcon">
+                                                            <Setter Property="Kind" Value="StarOutline"/>
+                                                            <Setter Property="Foreground" Value="#64748B"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                                    <Setter Property="Kind" Value="Star"/>
+                                                                    <Setter Property="Foreground" Value="#FBBF24"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </materialDesign:PackIcon.Style>
+                                                </materialDesign:PackIcon>
+                                            </Button>
+
                                             <!-- Icon -->
-                                            <Border Width="22" Height="22" CornerRadius="6"
+                                            <Border Grid.Column="1"
+                                                    Width="22" Height="22" CornerRadius="6"
                                                     Background="#0B1220" BorderBrush="#24314E" BorderThickness="1"
                                                     ClipToBounds="True" VerticalAlignment="Center">
                                                 <Image Source="{Binding IconUrl}" Stretch="UniformToFill"/>
                                             </Border>
 
                                             <!-- Symbol -->
-                                            <StackPanel Grid.Column="1">
+                                            <StackPanel Grid.Column="2">
                                                 <TextBlock Text="{Binding Symbol}" FontWeight="SemiBold" Foreground="White"/>
                                                 <TextBlock Text="{Binding Blockchain}" Foreground="#64748B" FontSize="10"/>
                                             </StackPanel>
 
                                             <!-- Last -->
-                                            <TextBlock Grid.Column="2"
-                                                       Text="{Binding Price, StringFormat={}{0:N2}}" Foreground="White"/>
+                                            <TextBlock Grid.Column="3"
+                                                       Text="{Binding Price, StringFormat={}{0:N2}}"
+                                                       Foreground="White"/>
 
                                             <!-- Δ -->
-                                            <StackPanel Grid.Column="3" Orientation="Horizontal">
-                                                <TextBlock Text="{Binding Change, Converter={StaticResource ChangeToArrowConverter}}" 
+                                            <StackPanel Grid.Column="4" Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Change, Converter={StaticResource ChangeToArrowConverter}}"
                                                            Foreground="{Binding Change, Converter={StaticResource ChangeToBrushConverter}}"
                                                            FontWeight="SemiBold" Margin="0,0,4,0"/>
                                                 <TextBlock Text="{Binding Change, StringFormat={}{0:N6}}"
@@ -190,25 +255,25 @@
                                             </StackPanel>
 
                                             <!-- Δ% -->
-                                            <TextBlock Grid.Column="4"
+                                            <TextBlock Grid.Column="5"
                                                        Text="{Binding ChangePct, StringFormat={}{0:N2}%}"
                                                        Foreground="{Binding Change, Converter={StaticResource ChangeToBrushConverter}}"
                                                        FontWeight="SemiBold"/>
 
                                             <!-- Yesterday -->
-                                            <TextBlock Grid.Column="5"
+                                            <TextBlock Grid.Column="6"
                                                        Text="{Binding PriceYesterday, StringFormat={}{0:N6}}"
                                                        Foreground="#94A3B8"
                                                        Visibility="{Binding DataContext.ShowYesterday, Converter={StaticResource BoolToVis}, RelativeSource={RelativeSource AncestorType=Window}}"/>
 
                                             <!-- Volume -->
-                                            <TextBlock Grid.Column="6"
+                                            <TextBlock Grid.Column="7"
                                                        Text="{Binding VolumeYesterdayUsd, StringFormat={}{0:N0}}"
                                                        Foreground="#94A3B8"
                                                        Visibility="{Binding DataContext.ShowVolume, Converter={StaticResource BoolToVis}, RelativeSource={RelativeSource AncestorType=Window}}"/>
 
                                             <!-- Updated -->
-                                            <TextBlock Grid.Column="7"
+                                            <TextBlock Grid.Column="8"
                                                        Text="{Binding UpdatedTime, StringFormat={}{0:HH:mm:ss}}"
                                                        Foreground="#94A3B8"
                                                        Visibility="{Binding DataContext.ShowUpdated, Converter={StaticResource BoolToVis}, RelativeSource={RelativeSource AncestorType=Window}}"/>

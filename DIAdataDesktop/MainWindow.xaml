@@ -6,6 +6,8 @@
         xmlns:viewmodels="clr-namespace:DIAdataDesktop.ViewModels"
         xmlns:controls="clr-namespace:DIAdataDesktop.Views.Controls"
         xmlns:conv="clr-namespace:DIAdataDesktop.Converters"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Style="{StaticResource CustomWindowStyle}"
         mc:Ignorable="d"
@@ -47,14 +49,8 @@
                             <ColumnDefinition Width="10"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-
-                        <Border Width="48" Height="48" CornerRadius="14"
-                                Background="#0F234A" BorderBrush="#26406F" BorderThickness="1">
-                            <TextBlock Text="D" Foreground="#B6D4FF"
-                                       FontSize="24" FontWeight="Bold"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"/>
-                        </Border>
+                        
+                        <Image Source="{svgc:SvgImage Source=/Logos/dia-icon.svg, AppName=DIAdataDesktop}" Height="48" Width="48"/>
 
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="DIA App" Foreground="{StaticResource SidebarText}"
@@ -85,9 +81,9 @@
                         </ToggleButton>
 
                         <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
-                Tag="Exchanges"
-                Click="Nav_Click"
-                IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Exchanges}">
+                                      Tag="Exchanges"
+                                      Click="Nav_Click"
+                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Exchanges}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="26"/>
@@ -138,56 +134,11 @@
                             </Grid>
                         </ToggleButton>
 
-                        <TextBlock Style="{StaticResource SidebarSectionHeader}" Text="Oracle"/>
-
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=OraclePlayground}"
-                                      Command="{Binding NavigateCommand}" CommandParameter="OraclePlayground">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="⬡" Opacity="0.9" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Oracle playground" FontWeight="SemiBold"/>
-                                <Border Grid.Column="2" Margin="8,0,0,0" Padding="8,2"
-                                        CornerRadius="999" Background="#1B3D2A" BorderBrush="#2C6E49" BorderThickness="1">
-                                    <TextBlock Text="NEW" FontSize="11" Foreground="#BBF7D0"/>
-                                </Border>
-                            </Grid>
-                        </ToggleButton>
-
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=DataSources}"
-                                      Command="{Binding NavigateCommand}" CommandParameter="DataSources">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="◌" Opacity="0.9" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Data sources" FontWeight="SemiBold"/>
-                            </Grid>
-                        </ToggleButton>
-
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=SupportedChains}"
-                                      Command="{Binding NavigateCommand}" CommandParameter="SupportedChains">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="⛓" Opacity="0.9" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Supported chains" FontWeight="SemiBold"/>
-                            </Grid>
-                        </ToggleButton>
-
+                 
                         <TextBlock Style="{StaticResource SidebarSectionHeader}" Text="Tools"/>
 
                         <ToggleButton Style="{StaticResource SidebarMenuItem}"
-              Click="OpenWatchlistWidget_Click">
+                                      Click="OpenWatchlistWidget_Click">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="26"/>
@@ -196,21 +147,21 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Column="0" Text="⌁" Opacity="0.9" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Watchlist widget" FontWeight="SemiBold"/>
+                                <TextBlock Grid.Column="1" Text="Watchlist" FontWeight="SemiBold"/>
 
                                 <Border Grid.Column="2" Margin="8,0,0,0" Padding="8,2"
-                CornerRadius="999" Background="#0F234A" BorderBrush="#2D64E3" BorderThickness="1">
+                                         CornerRadius="999" Background="#0F234A" BorderBrush="#2D64E3" BorderThickness="1">
                                     <TextBlock Text="POPUP" FontSize="11" Foreground="#B6D4FF"/>
                                 </Border>
                             </Grid>
                         </ToggleButton>
 
-                        <Border DockPanel.Dock="Bottom" Margin="0,14,0,0"
-             Background="#0C1A33"
-             BorderBrush="{StaticResource SidebarStroke}"
-             BorderThickness="1"
-             CornerRadius="14"
-             Padding="12">
+                        <Border DockPanel.Dock="Bottom" Margin="0,14,0,0" VerticalAlignment="Bottom"
+                                Background="#0C1A33"
+                                BorderBrush="{StaticResource SidebarStroke}"
+                                BorderThickness="1"
+                                CornerRadius="14"
+                                Padding="12">
                             <StackPanel>
                                 <TextBlock Text="{Binding StatusChipText}" Foreground="{StaticResource SidebarText}" FontWeight="SemiBold"/>
                                 <TextBlock Text="{Binding LastUpdateChipText}" Foreground="{StaticResource SidebarTextMuted}" Margin="0,3,0,0"/>
@@ -237,54 +188,9 @@
 
         <Grid Grid.Column="2" Margin="18">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="14"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0"
-                    Background="{StaticResource ContentCardBg}"
-                    BorderBrush="{StaticResource ContentStroke}"
-                    BorderThickness="1"
-                    CornerRadius="16"
-                    Padding="12">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="340"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel>
-                        <TextBlock Text="Explore data" Foreground="#E5E7EB" FontSize="18" FontWeight="SemiBold"/>
-                        <TextBlock Text="Quotation, quoted assets, meta lists" Foreground="#9CA3AF" Margin="0,2,0,0"/>
-                    </StackPanel>
-
-                    <TextBox Grid.Column="1"
-                             Margin="0"
-                             VerticalAlignment="Center"
-                             Background="#0B1220"
-                             Foreground="#E5E7EB"
-                             BorderBrush="#24314E"
-                             BorderThickness="1"
-                             Padding="10,8"
-                             Text="{Binding QuotedAssets.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             ToolTip="Search quoted assets"/>
-                    <Button Grid.Column="3"
-                            Margin="0"
-                            Padding="14,8"
-                            Command="{Binding RefreshAllCommand}"
-                            Style="{StaticResource GhostButton}"
-                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvBool}}"
-                            Background="#1D4ED8"
-                            Foreground="White"
-                            BorderBrush="#2D64E3"
-                            BorderThickness="1">
-                        <TextBlock Text="Refresh"/>
-                    </Button>
-                </Grid>
-            </Border>
             <ScrollViewer Grid.Row="2">
                 <ContentControl x:Name="MainContent" Margin="0,0,5,0"/>
             </ScrollViewer>

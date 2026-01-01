@@ -206,6 +206,14 @@ namespace DIAdataDesktop.ViewModels
             });
         }
 
+        public IReadOnlyList<DiaQuotedAssetRow> GetAllRowsSnapshot()
+        {
+            if (_ui.CheckAccess())
+                return _allRows.ToList();
+
+            return _ui.Invoke(() => _allRows.ToList());
+        }
+
 
         partial void OnSearchTextChanged(string value)
         {
