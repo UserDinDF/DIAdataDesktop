@@ -5,6 +5,7 @@ using DIAdataDesktop.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -20,6 +21,8 @@ namespace DIAdataDesktop.ViewModels
 
         public ObservableCollection<FavoriteTileVM> FavoriteAssets { get; } = new();
         public ObservableCollection<FavoriteTileVM> FavoriteExchanges { get; } = new();
+
+        public ObservableCollection<StatTileVM> Stats { get; } = new();
 
         [ObservableProperty] private string statusText = "Ready";
 
@@ -51,26 +54,18 @@ namespace DIAdataDesktop.ViewModels
             {
                 StatusText = "Loading favorites...";
                 await LoadFavoritesAsync();
+                BuildStats(); 
                 StatusText = "Ready";
             }
             catch (Exception ex)
             {
-                StatusText = "Favorites load failed";
+                StatusText = "Start page load failed";
                 Debug.WriteLine(ex);
             }
         }
 
-        [RelayCommand]
-        private void OpenAssets()
-        {
-            Navigate?.Invoke("assets");
-        }
-
-        [RelayCommand]
-        private void OpenExchanges()
-        {
-            Navigate?.Invoke("exchanges");
-        }
+        [RelayCommand] private void OpenAssets() => Navigate?.Invoke("assets");
+        [RelayCommand] private void OpenExchanges() => Navigate?.Invoke("exchanges");
 
         private async Task LoadFavoritesAsync(CancellationToken ct = default)
         {
@@ -88,7 +83,7 @@ namespace DIAdataDesktop.ViewModels
 
             var allExchanges = _exchanges._all;
             var favExchanges = allExchanges
-                .Where(e => e.IsFavorite)
+                .Where(e => exchangeKeys.Contains(FavoritesRepository.MakeExchangeKey(e.Name)))
                 .OrderByDescending(e => e.Volume24h)
                 .Take(12)
                 .ToList();
@@ -105,7 +100,7 @@ namespace DIAdataDesktop.ViewModels
                     {
                         await _assets.ToggleFavorite(r);
                         await LoadFavoritesAsync(ct);
-                        OnPropertyChanged(nameof(HasFavoriteAssets));
+                        BuildStats();
                     }
                 ));
             }
@@ -116,19 +111,67 @@ namespace DIAdataDesktop.ViewModels
                 FavoriteExchanges.Add(new FavoriteTileVM(
                     title: ex.Name ?? "",
                     subtitle: $"{ex.Type} • {ex.Blockchain}",
-                    iconUrl: null, 
+                    iconUrl: null,
                     open: () => OpenExchangeSource(ex),
                     toggleFavorite: async () =>
                     {
                         await _exchanges.ToggleFavoriteByName(ex.Name);
                         await LoadFavoritesAsync(ct);
-                        OnPropertyChanged(nameof(HasFavoriteExchanges));
+                        BuildStats();
                     }
                 ));
             }
 
             OnPropertyChanged(nameof(HasFavoriteAssets));
             OnPropertyChanged(nameof(HasFavoriteExchanges));
+        }
+
+        private void BuildStats()
+        {
+            var assets = _assets.GetAllRowsSnapshot();
+            var exchanges = _exchanges._all;
+
+            // Assets
+            var assetsCount = assets.Count;
+            var assetsVol = assets.Sum(x => (decimal)x.Volume);
+            var topAsset = assets.OrderByDescending(x => x.Volume).FirstOrDefault();
+
+            // Exchanges
+            var exCount = exchanges.Count;
+            var exVol = exchanges.Sum(x => (decimal)x.Volume24h);
+            var topEx = exchanges.OrderByDescending(x => x.Volume24h).FirstOrDefault();
+
+            var loadedPairs = assets.Sum(a => a.CexPairs?.Count ?? 0);
+
+            Stats.Clear();
+
+            Stats.Add(new StatTileVM("Digital Assets", assetsCount.ToString("N0"), "Total assets loaded", "CurrencyUsd"));
+            Stats.Add(new StatTileVM("Assets Volume", FormatUsd(assetsVol), "Sum of asset volumes", "ChartLine"));
+
+            if (topAsset != null)
+                Stats.Add(new StatTileVM("Top Asset", $"{topAsset.Symbol}", $"Vol: {FormatUsd((decimal)topAsset.Volume)}", "TrophyOutline"));
+            else
+                Stats.Add(new StatTileVM("Top Asset", "-", "No data yet", "TrophyOutline"));
+
+            Stats.Add(new StatTileVM("Exchanges", exCount.ToString("N0"), "Total exchanges loaded", "Bank"));
+            Stats.Add(new StatTileVM("Exchanges Volume", FormatUsd(exVol), "Sum of exchange 24h volume", "ChartBar"));
+
+            if (topEx != null)
+                Stats.Add(new StatTileVM("Top Exchange", $"{topEx.Name}", $"24h: {FormatUsd((decimal)topEx.Volume24h)}", "TrophyOutline"));
+            else
+                Stats.Add(new StatTileVM("Top Exchange", "-", "No data yet", "TrophyOutline"));
+
+            Stats.Add(new StatTileVM("Favorites", $"{FavoriteAssets.Count + FavoriteExchanges.Count}", "Assets + Exchanges", "Star"));
+            Stats.Add(new StatTileVM("Pairs", loadedPairs.ToString("N0"), "CEX pairs already prefetched", "LinkVariant"));
+        }
+
+        private static string FormatUsd(decimal v)
+        {
+            var abs = Math.Abs(v);
+            if (abs >= 1_000_000_000m) return $"${(v / 1_000_000_000m):0.##}B";
+            if (abs >= 1_000_000m) return $"${(v / 1_000_000m):0.##}M";
+            if (abs >= 1_000m) return $"${(v / 1_000m):0.##}K";
+            return $"${v:0.##}";
         }
 
         private static void OpenAssetDetails(DiaQuotedAssetRow row)
@@ -143,7 +186,6 @@ namespace DIAdataDesktop.ViewModels
 
         private static void OpenExchangeSource(DiaExchange ex)
         {
-            // you said: https://www.diadata.org/app/source/defi/Binance/
             var name = Uri.EscapeDataString((ex.Name ?? "").Trim());
             if (string.IsNullOrWhiteSpace(name)) return;
 
@@ -170,5 +212,21 @@ namespace DIAdataDesktop.ViewModels
 
         public IRelayCommand OpenCommand { get; }
         public IAsyncRelayCommand ToggleFavoriteCommand { get; }
+    }
+
+    public sealed class StatTileVM : ObservableObject
+    {
+        public StatTileVM(string title, string value, string subtitle, string iconKind)
+        {
+            Title = title;
+            Value = value;
+            Subtitle = subtitle;
+            IconKind = iconKind;
+        }
+
+        public string Title { get; }
+        public string Value { get; }
+        public string Subtitle { get; }
+        public string IconKind { get; }
     }
 }

@@ -13,7 +13,7 @@
         mc:Ignorable="d"
         Margin="0,0,0,0"
         Topmost="False"
-        Title="DIAdata Desktop" Height="780" Width="1180"
+        Title="DIAdata Desktop" Height="780" Width="1250"
         WindowStartupLocation="CenterScreen"
         Background="#0B1220">
 

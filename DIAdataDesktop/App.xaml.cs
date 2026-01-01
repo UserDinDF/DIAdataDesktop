@@ -22,7 +22,6 @@ namespace DIAdataDesktop
                     services.AddSingleton<MainViewModel>();
 
                     // Controls
-                    services.AddSingleton<QuotationControl>();
                     services.AddSingleton<QuotedAssetsControl>();
                     services.AddSingleton<ExchangesControl>();
                     services.AddSingleton<StartPageControl>();

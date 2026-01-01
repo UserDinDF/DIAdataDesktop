@@ -18,7 +18,6 @@ namespace DIAdataDesktop.ViewModels
         public readonly DiaApiClient _api = new();
         private readonly DispatcherTimer _timer;
 
-        public QuotationViewModel Quotation { get; }
         public QuotedAssetsViewModel QuotedAssets { get; }
 
         public ExchangesViewModel ExchangesVm { get; }
@@ -63,7 +62,6 @@ namespace DIAdataDesktop.ViewModels
             if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
                 return;
 
-            Quotation = new QuotationViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             QuotedAssets = new QuotedAssetsViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             ExchangesVm = new ExchangesViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             StartPageVm = new StartPageViewModel(QuotedAssets, ExchangesVm);
@@ -149,8 +147,6 @@ namespace DIAdataDesktop.ViewModels
                 SetBusyFromShell(true);
                 Error = null;
 
-                await Quotation.LoadQuotationAsync();
-
                 await QuotedAssets.LoadQuotedAssetsAsync();
 
                 LastUpdate = DateTimeOffset.Now;
@@ -196,7 +192,6 @@ namespace DIAdataDesktop.ViewModels
         private void SetBusyFromShell(bool busy)
         {
             IsBusy = busy;
-            Quotation.IsBusy = busy;
             QuotedAssets.IsBusy = busy;
         }
     }

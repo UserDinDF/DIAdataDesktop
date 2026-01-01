@@ -45,7 +45,6 @@ namespace DIAdataDesktop
             UIElement page = key switch
             {
                 "Homepage" => await BuildHomePage(),
-                "Quotation" => BuildQuotationPage(),
                 "QuotedAssets" => await BuildQuotedAssetsPage(),
                 "Exchanges" => BuildExchangesPage(),
 
@@ -79,13 +78,6 @@ namespace DIAdataDesktop
         {
             var ctrl = App.Services.GetRequiredService<ExchangesControl>();
             ctrl.DataContext = _vm.ExchangesVm;
-            return ctrl;
-        }
-
-        private UIElement BuildQuotationPage()
-        {
-            var ctrl = App.Services.GetRequiredService<QuotationControl>();
-            ctrl.DataContext = _vm.Quotation;  
             return ctrl;
         }
 
