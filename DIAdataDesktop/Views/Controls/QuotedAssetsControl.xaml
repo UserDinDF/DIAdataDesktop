@@ -132,13 +132,22 @@
           SelectedItem="{Binding PageSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
           Margin="0,0,16,0"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,0" VerticalAlignment="Center">
                         <TextBlock Foreground="#64748B" VerticalAlignment="Center" Text="Blockchain" Margin="0,0,8,0"/>
                         <ComboBox Style="{StaticResource DarkComboBox}"
               Width="auto"
               ItemsSource="{Binding Blockchains}"
               SelectedItem="{Binding SelectedBlockchain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
+                    
+                    <TextBlock Foreground="#64748B" Margin="18,0,6,0" VerticalAlignment="Center" Text="Search"/>
+                    <TextBox Width="260"
+                         Background="#0B1220"
+                         Foreground="#E5E7EB"
+                         BorderBrush="#24314E"
+                         BorderThickness="1"
+                         Padding="5,5"
+                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                 </StackPanel>
             </StackPanel>

@@ -103,22 +103,8 @@
                          Foreground="#E5E7EB"
                          BorderBrush="#24314E"
                          BorderThickness="1"
-                         Padding="10,7"
+                         Padding="10,4"
                          Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                <Button Margin="12,0,0,0"
-                        Padding="14,8"
-                        Command="{Binding RefreshCommand}"
-                        Style="{StaticResource GhostButton}"
-                        Background="#1D4ED8"
-                        Foreground="White"
-                        BorderBrush="#2D64E3"
-                        BorderThickness="1">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Refresh" Width="16" Height="16" Margin="0,0,8,0"/>
-                        <TextBlock Text="Refresh"/>
-                    </StackPanel>
-                </Button>
             </StackPanel>
         </StackPanel>
 
