@@ -111,7 +111,7 @@
                 <TextBlock Text="{Binding StatusText}" Foreground="#94A3B8" Margin="0,3,0,0"/>
 
                 <!-- Paging bar -->
-                <StackPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Center">
+                <WrapPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Center">
                     <Button Content="⟪" Command="{Binding GoToFirstCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,6,0"/>
                     <Button Content="‹ Prev" Style="{StaticResource PrimaryButton}" Command="{Binding PrevPageCommand}" Margin="0,0,10,0"/>
 
@@ -141,7 +141,7 @@
                     </StackPanel>
                     
                     <TextBlock Foreground="#64748B" Margin="18,0,6,0" VerticalAlignment="Center" Text="Search"/>
-                    <TextBox Width="260"
+                    <TextBox Width="120"
                          Background="#0B1220"
                          Foreground="#E5E7EB"
                          BorderBrush="#24314E"
@@ -149,7 +149,7 @@
                          Padding="5,5"
                          Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                </StackPanel>
+                </WrapPanel>
             </StackPanel>
         </Grid>
 
