@@ -66,8 +66,7 @@ namespace DIAdataDesktop.ViewModels
             QuotedAssets = new QuotedAssetsViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             ExchangesVm = new ExchangesViewModel(_api, SetBusyFromChild, SetErrorFromChild);
             RwaVm = new RwaViewModel(_api, SetBusyFromChild, SetErrorFromChild);
-            StartPageVm = new StartPageViewModel(QuotedAssets, ExchangesVm);
-      
+            StartPageVm = new StartPageViewModel(QuotedAssets, ExchangesVm, RwaVm);
 
             WatchlistView = CollectionViewSource.GetDefaultView(Watchlist);
             WatchlistView.Filter = o =>

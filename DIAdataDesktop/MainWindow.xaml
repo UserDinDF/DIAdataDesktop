@@ -7,13 +7,11 @@
         xmlns:controls="clr-namespace:DIAdataDesktop.Views.Controls"
         xmlns:conv="clr-namespace:DIAdataDesktop.Converters"
         xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Style="{StaticResource CustomWindowStyle}"
         mc:Ignorable="d"
-        Margin="0,0,0,0"
-        Topmost="False"
-        Title="DIAdata Desktop" Height="780" Width="1200"
+        Title="DIAdata Desktop"
+        Height="780" Width="1200"
         WindowStartupLocation="CenterScreen"
         Background="#0B1220">
 
@@ -26,11 +24,118 @@
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <conv:StringToVisibilityConverter x:Key="StringToVis"/>
         <conv:StringEqualsToBoolConverter x:Key="StringEqualsToBool"/>
+
+        <!-- ========= COLORS ========= -->
+        <SolidColorBrush x:Key="SbBg" Color="#0B1220"/>
+        <SolidColorBrush x:Key="SbStroke" Color="#1E2A46"/>
+        <SolidColorBrush x:Key="SbText" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="SbMuted" Color="#94A3B8"/>
+        <SolidColorBrush x:Key="SbDim" Color="#64748B"/>
+
+        <SolidColorBrush x:Key="SbHoverBg" Color="#101B33"/>
+        <SolidColorBrush x:Key="SbActiveBg" Color="#172554"/>
+        <!-- pill -->
+        <SolidColorBrush x:Key="SbActiveStroke" Color="#3B82F6"/>
+
+        <!-- ========= TYPO / SPACING ========= -->
+        <Thickness x:Key="SbItemPadding" Left="12" Top="10" Right="12" Bottom="10"/>
+        <CornerRadius x:Key="SbItemRadius"/>
+
+        <!-- ========= SECTION HEADER (Data library / Tools / Help) ========= -->
+        <Style x:Key="SidebarSectionHeader" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource SbDim}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,18,0,8"/>
+            <Setter Property="Opacity" Value="0.95"/>
+        </Style>
+
+        <!-- ========= MAIN ITEM (group header like "Data library") ========= -->
+        <Style x:Key="SidebarMainItem" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="{StaticResource SbItemPadding}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{StaticResource SbItemRadius}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource SbHoverBg}"/>
+                            </Trigger>
+
+                            <!-- "Active" pill state (SelectedNav match sets IsChecked via your converter) -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource SbActiveBg}"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource SbActiveStroke}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ========= SUB ITEM (indent like web) ========= -->
+        <Style x:Key="SidebarSubItem" TargetType="ToggleButton" BasedOn="{StaticResource SidebarMainItem}">
+            <Setter Property="Padding" Value="34,8,12,8"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+        </Style>
+
+        <!-- ========= link-like item (Help links) ========= -->
+        <Style x:Key="SidebarLinkItem" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" CornerRadius="12"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource SbHoverBg}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- small NEW badge -->
+        <Style x:Key="NewBadge" TargetType="Border">
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Background" Value="#D1FAE5"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="Margin" Value="10,0,0,0"/>
+        </Style>
     </Window.Resources>
 
     <Grid Background="{StaticResource ContentBg}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="292"/>
             <ColumnDefinition Width="12"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -49,134 +154,357 @@
                             <ColumnDefinition Width="10"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        
-                        <Image Source="{svgc:SvgImage Source=/Logos/dia-icon.svg, AppName=DIAdataDesktop}" Height="48" Width="48"/>
 
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="DIA App" Foreground="{StaticResource SidebarText}"
+                        
+                            <Image Source="{svgc:SvgImage Source=/Logos/dia-icon.svg, AppName=DIAdataDesktop}"
+                                   Height="48" Width="48"
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        
+
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <TextBlock Text="DIA App" Foreground="{StaticResource SbText}"
                                        FontSize="18" FontWeight="SemiBold"/>
-                            <TextBlock Text="DIAdata Desktop" Foreground="{StaticResource SidebarTextMuted}"
+                            <TextBlock Text="DIAdata Desktop" Foreground="{StaticResource SbMuted}"
                                        FontSize="12" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Border DockPanel.Dock="Bottom" Margin="0,14,0,0"
+                        Background="#0C1A33"
+                        BorderBrush="{StaticResource SidebarStroke}"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        Padding="12">
                     <StackPanel>
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}"
-                                      Tag="DataLibrary"
+                        <TextBlock Text="{Binding StatusChipText}" Foreground="{StaticResource SbText}" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding LastUpdateChipText}" Foreground="{StaticResource SbMuted}" Margin="0,3,0,0"/>
+
+                        <Border Margin="0,10,0,0"
+                                Background="#2B0F12" BorderBrush="#6B1F26" BorderThickness="1"
+                                CornerRadius="12" Padding="10"
+                                Visibility="{Binding Error, Converter={StaticResource StringToVis}}">
+                            <TextBlock Text="{Binding Error}" Foreground="#FCA5A5" TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Scrollable menu -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+
+                        <!-- ===== Data library section header ===== -->
+                        <TextBlock Text="Data library" Style="{StaticResource SidebarSectionHeader}"/>
+
+                        <!-- Sub items: shown when group is "active" or user clicked group.
+                             If du willst: nur aufklappen wenn SelectedNav in einem Submenu ist,
+                             sag kurz, dann mache ich das rein. -->
+                        <StackPanel Margin="0,4,0,0">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <!-- optional: collapse when not on any data section -->
+                                    <!--
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedNav}" Value="DigitalAssets">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedNav}" Value="RealWorldAssets">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedNav}" Value="Randomness">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedNav}" Value="DataLibrary">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    -->
+                                </Style>
+                            </StackPanel.Style>
+
+                            <ToggleButton Style="{StaticResource SidebarSubItem}"
+                  Tag="Exchanges"
+                  Click="Nav_Click"
+                  IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                      Converter={StaticResource StringEqualsToBool},
+                                      ConverterParameter=Exchanges}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <materialDesign:PackIcon Grid.Column="0" Width="16" Height="16" Kind="SwapHorizontal"
+                                                             Foreground="{StaticResource SbMuted}"
+                                                             VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Exchanges" FontSize="13"
+                                               Foreground="{StaticResource SbMuted}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </ToggleButton>
+
+                            
+                            <ToggleButton Style="{StaticResource SidebarSubItem}"
+                                          Tag="DigitalAssets"
+                                          Click="Nav_Click"
+                                          IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                                              Converter={StaticResource StringEqualsToBool},
+                                                              ConverterParameter=DigitalAssets}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <materialDesign:PackIcon Grid.Column="0" Kind="CurrencyUsd" Width="16" Height="16"
+                                                             Foreground="{StaticResource SbMuted}"
+                                                             VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Digital assets" FontSize="13"
+                                               Foreground="{StaticResource SbMuted}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </ToggleButton>
+
+                            <ToggleButton Style="{StaticResource SidebarSubItem}"
+                                          Tag="RealWorldAssets"
+                                          Click="Nav_Click"
+                                          IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                                              Converter={StaticResource StringEqualsToBool},
+                                                              ConverterParameter=RealWorldAssets}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <materialDesign:PackIcon Grid.Column="0" Kind="Earth" Width="16" Height="16"
+                                                             Foreground="{StaticResource SbMuted}"
+                                                             VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Real-world assets" FontSize="13"
+                                               Foreground="{StaticResource SbMuted}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </ToggleButton>
+
+                            <ToggleButton Style="{StaticResource SidebarSubItem}"
+                                          Tag="Randomness"
+                                          Click="Nav_Click"
+                                          IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                                              Converter={StaticResource StringEqualsToBool},
+                                                              ConverterParameter=Randomness}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <materialDesign:PackIcon Grid.Column="0" Kind="ShuffleVariant" Width="16" Height="16"
+                                                             Foreground="{StaticResource SbMuted}"
+                                                             VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Randomness" FontSize="13"
+                                               Foreground="{StaticResource SbMuted}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </ToggleButton>
+                        </StackPanel>
+
+                        <!-- ===== Standalone items like web ===== -->
+                        <ToggleButton Style="{StaticResource SidebarMainItem}"
+                                      Tag="OraclePlayground"
                                       Click="Nav_Click"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=DataLibrary}">
+                                      IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                                          Converter={StaticResource StringEqualsToBool},
+                                                          ConverterParameter=OraclePlayground}"
+                                      Margin="0,10,0,0">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="22"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="◈" Opacity="0.85" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Data library" FontWeight="SemiBold"/>
+
+                                <materialDesign:PackIcon Grid.Column="0" Kind="CubeOutline" Width="18" Height="18"
+                                                         Foreground="{StaticResource SbText}"
+                                                         VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Oracle playground" FontSize="13"
+                                           Foreground="{StaticResource SbText}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+
+                                <materialDesign:PackIcon Grid.Column="2" Kind="OpenInNew" Width="16" Height="16"
+Foreground="{StaticResource SbMuted}"
+VerticalAlignment="Center"/>
                             </Grid>
                         </ToggleButton>
 
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
-                                      Tag="Homepage"
+
+                        <ToggleButton Style="{StaticResource SidebarMainItem}"
+                                      Tag="SupportedChains"
                                       Click="Nav_Click"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Homepage}">
+                                      IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                                          Converter={StaticResource StringEqualsToBool},
+                                                          ConverterParameter=SupportedChains}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="22"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="›" Opacity="0.7" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Homepage" Foreground="{StaticResource SidebarTextMuted}"/>
-                            </Grid>
-                        </ToggleButton>
-                        
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
-                                      Tag="Exchanges"
-                                      Click="Nav_Click"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=Exchanges}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="›" Opacity="0.7" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Exchanges" Foreground="{StaticResource SidebarTextMuted}"/>
-                            </Grid>
-                        </ToggleButton>
-                        
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
-                                      Tag="DigitalAssets"
-                                      Click="Nav_Click"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=DigitalAssets}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="›" Opacity="0.7" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Digital assets" Foreground="{StaticResource SidebarTextMuted}"/>
+                                <materialDesign:PackIcon Grid.Column="0" Kind="Cube" Width="18" Height="18"
+                                                         Foreground="{StaticResource SbText}"
+                                                         VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Supported chains" FontSize="13"
+                                           Foreground="{StaticResource SbText}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+
+                                <materialDesign:PackIcon Grid.Column="2" Kind="OpenInNew" Width="16" Height="16"
+                           Foreground="{StaticResource SbMuted}"
+                           VerticalAlignment="Center"/>
                             </Grid>
                         </ToggleButton>
 
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}" Margin="14,6,0,0"
-                                      IsChecked="{Binding SelectedNav, Mode=TwoWay, Converter={StaticResource StringEqualsToBool}, ConverterParameter=RealWorldAssets}"
+                        <!-- ===== Tools header ===== -->
+                        <TextBlock Text="Tools" Style="{StaticResource SidebarSectionHeader}"/>
+
+                        <!-- GROUP: Staking (like web, with chevron) -->
+                        <ToggleButton x:Name="ToolsStakingGroup"
+                                      Style="{StaticResource SidebarMainItem}"
+                                      Tag="Staking"
                                       Click="Nav_Click"
-                                      Tag="RealWorldAssets">
+                                      IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                                          Converter={StaticResource StringEqualsToBool},
+                                                          ConverterParameter=Staking}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="22"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="›" Opacity="0.7" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Real-world assets" Foreground="{StaticResource SidebarTextMuted}"/>
+
+                                <materialDesign:PackIcon Grid.Column="0" Kind="ShieldOutline" Width="18" Height="18"
+                                                         Foreground="{StaticResource SbText}"
+                                                         VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1" Text="Staking" FontSize="13"
+                                           Foreground="{StaticResource SbText}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+
+                                <materialDesign:PackIcon Grid.Column="2" Kind="OpenInNew" Width="16" Height="16"
+                                                         Foreground="{StaticResource SbMuted}"
+                                                         VerticalAlignment="Center"/>
                             </Grid>
                         </ToggleButton>
 
-                        <TextBlock Style="{StaticResource SidebarSectionHeader}" Text="Tools"/>
-
-                        <ToggleButton Style="{StaticResource SidebarMenuItem}"
-                                      Click="OpenWatchlistWidget_Click">
+                        <!-- Bridge as separate item (like screenshot) -->
+                        <ToggleButton Style="{StaticResource SidebarMainItem}"
+                                      Tag="Bridge" 
+                                      Click="Nav_Click"
+                                      IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                                          Converter={StaticResource StringEqualsToBool},
+                                                          ConverterParameter=Bridge}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="22"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
+                                </Grid.ColumnDefinitions>
+                                <materialDesign:PackIcon Grid.Column="0" Kind="TransitConnection" Width="18" Height="18"
+                                                         Foreground="{StaticResource SbText}"
+                                                         VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Bridge" FontSize="13"
+                                           Foreground="{StaticResource SbText}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+
+                                <materialDesign:PackIcon Grid.Column="2" Kind="OpenInNew" Width="16" Height="16"
+                                                         Foreground="{StaticResource SbMuted}"
+                                                         VerticalAlignment="Center"/>
+                            </Grid>
+                        </ToggleButton>
+
+                        <!-- Your existing Watchlist popup (kept) -->
+                        <ToggleButton Style="{StaticResource SidebarMainItem}"
+                                      Click="OpenWatchlistWidget_Click"
+                                      Margin="0,12,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="22"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Column="0" Text="⌁" Opacity="0.9" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="Watchlist" FontWeight="SemiBold"/>
+                                <materialDesign:PackIcon Grid.Column="0" Kind="StarOutline" Width="18" Height="18"
+                                                         Foreground="{StaticResource SbText}"
+                                                         VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Watchlist" FontSize="13"
+                                           Foreground="{StaticResource SbText}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
 
-                                <Border Grid.Column="2" Margin="8,0,0,0" Padding="8,2"
-                                         CornerRadius="999" Background="#0F234A" BorderBrush="#2D64E3" BorderThickness="1">
-                                    <TextBlock Text="POPUP" FontSize="11" Foreground="#B6D4FF"/>
+                                <Border Grid.Column="2" Margin="10,0,0,0" Padding="8,2" 
+                                        CornerRadius="999" Background="#0F234A" 
+                                        BorderBrush="#2D64E3" BorderThickness="1">
+                                    <TextBlock Text="POPUP" FontSize="9" Foreground="#B6D4FF" FontWeight="SemiBold"/>
                                 </Border>
                             </Grid>
                         </ToggleButton>
 
-                        <Border DockPanel.Dock="Bottom" Margin="0,14,0,0" VerticalAlignment="Bottom"
-                                Background="#0C1A33"
-                                BorderBrush="{StaticResource SidebarStroke}"
-                                BorderThickness="1"
-                                CornerRadius="14"
-                                Padding="12">
-                            <StackPanel>
-                                <TextBlock Text="{Binding StatusChipText}" Foreground="{StaticResource SidebarText}" FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding LastUpdateChipText}" Foreground="{StaticResource SidebarTextMuted}" Margin="0,3,0,0"/>
-                                <Border Margin="0,10,0,0"
-                     Background="#2B0F12" BorderBrush="#6B1F26" BorderThickness="1"
-                     CornerRadius="12" Padding="10"
-                     Visibility="{Binding Error, Converter={StaticResource StringToVis}}">
-                                    <TextBlock Text="{Binding Error}" Foreground="#FCA5A5" TextWrapping="Wrap"/>
-                                </Border>
-                            </StackPanel>
-                        </Border>
+                        <!-- ===== Help header ===== -->
+                        <TextBlock Text="Help" Style="{StaticResource SidebarSectionHeader}"/>
+
+                        <Button Style="{StaticResource SidebarLinkItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="22"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
+                                </Grid.ColumnDefinitions>
+
+                                <materialDesign:PackIcon Grid.Column="0" Kind="FileDocumentOutline" Width="18" Height="18"
+                                                         Foreground="{StaticResource SbText}"
+                                                         VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Documentation" FontSize="13"
+                                           Foreground="{StaticResource SbText}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Grid.Column="2" Kind="OpenInNew" Width="16" Height="16"
+                                                         Foreground="{StaticResource SbMuted}"
+                                                         VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button Style="{StaticResource SidebarLinkItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="22"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
+                                </Grid.ColumnDefinitions>
+
+                                <materialDesign:PackIcon Grid.Column="0" Kind="ChatOutline" Width="18" Height="18"
+                                                         Foreground="{StaticResource SbText}"
+                                                         VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Talk to a dev" FontSize="13"
+                                           Foreground="{StaticResource SbText}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Grid.Column="2" Kind="OpenInNew" Width="16" Height="16"
+                                                         Foreground="{StaticResource SbMuted}"
+                                                         VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Border Height="18" Background="Transparent"/>
                     </StackPanel>
                 </ScrollViewer>
-                
             </DockPanel>
         </Border>
 
+        <!-- splitter -->
         <GridSplitter Grid.Column="1"
                       Width="12"
                       Background="#0B1220"
@@ -184,12 +512,10 @@
                       VerticalAlignment="Stretch"
                       ShowsPreview="False"/>
 
+        <!-- ================= CONTENT ================= -->
         <Grid Grid.Column="2" Margin="18">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <ScrollViewer Grid.Row="2">
+            <!-- FIX: deine Row-Definitionen waren falsch (Row=2 gab’s nicht) -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <ContentControl x:Name="MainContent" Margin="0,0,5,0"/>
             </ScrollViewer>
         </Grid>

@@ -42,21 +42,77 @@ namespace DIAdataDesktop
 
         private async void NavigateTo(string key)
         {
+            if (key == "SupportedChains")
+            {
+                OpenSupportedChainLink();
+                return;
+            }
+
+            if (key == "OraclePlayground")
+            {
+                OpenOraclePlaygroundLink();
+                return;
+            }
+
+            if (key == "Staking")
+            {
+                OpenStakingLink();
+                return;
+            }
+
+            if (key == "Bridge")
+            {
+                OpenBridgeLink();
+                return;
+            }
+
             UIElement page = key switch
             {
                 "Homepage" => await BuildHomePage(),
                 "QuotedAssets" => await BuildQuotedAssetsPage(),
                 "Exchanges" => BuildExchangesPage(),
                 "RealWorldAssets" => await BuildRWAPage(),
-
-                "DataLibrary" => BuildPlaceholder("Data library", "Choose a module on the left."),
-
                 "DigitalAssets" => await BuildQuotedAssetsPage(),
-                _ => BuildPlaceholder("Unknown", key)
             };
 
             _pageCache[key] = page;
             MainContent.Content = page;
+        }
+
+        private void OpenSupportedChainLink()
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "https://www.diadata.org/app/supported-chains/",
+                UseShellExecute = true
+            });
+        }
+
+        private void OpenOraclePlaygroundLink()
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "https://www.diadata.org/app/oracle-playground/",
+                UseShellExecute = true
+            });
+        }
+
+        private void OpenStakingLink()
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "https://www.diadata.org/app/staking/",
+                UseShellExecute = true
+            });
+        }
+
+        private void OpenBridgeLink()
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "https://www.diadata.org/app/bridge/",
+                UseShellExecute = true
+            });
         }
 
         private Task<UIElement> BuildRWAPage()

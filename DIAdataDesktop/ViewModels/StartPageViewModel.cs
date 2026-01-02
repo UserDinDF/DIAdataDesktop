@@ -18,9 +18,11 @@ namespace DIAdataDesktop.ViewModels
         private readonly QuotedAssetsViewModel _assets;
         private readonly ExchangesViewModel _exchanges;
         private readonly FavoritesRepository _favoritesRepo;
+        private readonly RwaViewModel _rwas;
 
         public ObservableCollection<FavoriteTileVM> FavoriteAssets { get; } = new();
         public ObservableCollection<FavoriteTileVM> FavoriteExchanges { get; } = new();
+        public ObservableCollection<FavoriteTileVM> FavoriteRWAs { get; } = new();
 
         public ObservableCollection<StatTileVM> Stats { get; } = new();
 
@@ -28,13 +30,15 @@ namespace DIAdataDesktop.ViewModels
 
         public bool HasFavoriteAssets => FavoriteAssets.Count > 0;
         public bool HasFavoriteExchanges => FavoriteExchanges.Count > 0;
+        public bool HasFavoriteRWAs => FavoriteRWAs.Count > 0;
 
         public Action<string>? Navigate { get; set; }
 
-        public StartPageViewModel(QuotedAssetsViewModel assets, ExchangesViewModel exchanges)
+        public StartPageViewModel(QuotedAssetsViewModel assets, ExchangesViewModel exchanges, RwaViewModel rwas)
         {
             _assets = assets;
             _exchanges = exchanges;
+            _rwas = rwas;
 
             var dbPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -45,6 +49,7 @@ namespace DIAdataDesktop.ViewModels
 
             FavoriteAssets.CollectionChanged += (_, __) => OnPropertyChanged(nameof(HasFavoriteAssets));
             FavoriteExchanges.CollectionChanged += (_, __) => OnPropertyChanged(nameof(HasFavoriteExchanges));
+            FavoriteRWAs.CollectionChanged += (_, __) => OnPropertyChanged(nameof(HasFavoriteRWAs));
         }
 
         [RelayCommand]
@@ -66,6 +71,7 @@ namespace DIAdataDesktop.ViewModels
 
         [RelayCommand] private void OpenAssets() => Navigate?.Invoke("QuotedAssets");
         [RelayCommand] private void OpenExchanges() => Navigate?.Invoke("Exchanges");
+        [RelayCommand] private void OpenRwas() => Navigate?.Invoke("RWA");
 
         private async Task LoadFavoritesAsync(CancellationToken ct = default)
         {
@@ -73,6 +79,8 @@ namespace DIAdataDesktop.ViewModels
 
             var tokenKeys = await _favoritesRepo.GetKeysAsync("token", ct);
             var exchangeKeys = await _favoritesRepo.GetKeysAsync("exchange", ct);
+            var rwaKeys = await _favoritesRepo.GetKeysAsync("rwa", ct);
+
 
             var allAssets = _assets.GetAllRowsSnapshot();
             var favAssets = allAssets
@@ -88,6 +96,16 @@ namespace DIAdataDesktop.ViewModels
                 .Take(12)
                 .ToList();
 
+            var allRwas = _rwas.GetAllRowsSnapshot();
+            var favRwas = allRwas
+    .Where(r => rwaKeys.Contains(r.FavKey))
+    .OrderBy(r => r.TypeLabel)
+    .ThenBy(r => r.AppSlug)
+    .Take(12)
+    .ToList();
+
+
+
             FavoriteAssets.Clear();
             foreach (var r in favAssets)
             {
@@ -95,6 +113,7 @@ namespace DIAdataDesktop.ViewModels
                     title: $"{r.Symbol}",
                     subtitle: $"{r.Blockchain}",
                     iconUrl: r.IconUrl,
+                    iconPngPath: "", 
                     open: () => OpenAssetDetails(r),
                     toggleFavorite: async () =>
                     {
@@ -112,6 +131,7 @@ namespace DIAdataDesktop.ViewModels
                     title: ex.Name ?? "",
                     subtitle: $"{ex.Type} • {ex.Blockchain}",
                     iconUrl: null,
+                    iconPngPath: "",
                     open: () => OpenExchangeSource(ex),
                     toggleFavorite: async () =>
                     {
@@ -122,8 +142,27 @@ namespace DIAdataDesktop.ViewModels
                 ));
             }
 
-            OnPropertyChanged(nameof(HasFavoriteAssets));
-            OnPropertyChanged(nameof(HasFavoriteExchanges));
+            FavoriteRWAs.Clear();
+            foreach (var r in favRwas)
+            {
+                FavoriteRWAs.Add(new FavoriteTileVM(
+                    title: r.AppSlug,
+                    subtitle: $"{r.TypeLabel} • {r.Name}",
+                    iconUrl: null, 
+                    iconPngPath: r.IconPngPath,
+                    open: () => OpenRwaApp(r),
+                    toggleFavorite: async () =>
+                    {
+                        await _rwas.ToggleFavorite(r);
+                        await LoadFavoritesAsync(ct);
+                        BuildStats();
+                    }
+                ));
+
+                OnPropertyChanged(nameof(HasFavoriteAssets));
+                OnPropertyChanged(nameof(HasFavoriteExchanges));
+                OnPropertyChanged(nameof(HasFavoriteRWAs));
+            }
         }
 
         private void BuildStats()
@@ -161,8 +200,9 @@ namespace DIAdataDesktop.ViewModels
             else
                 Stats.Add(new StatTileVM("Top Exchange", "-", "No data yet", "TrophyOutline"));
 
-            Stats.Add(new StatTileVM("Favorites", $"{FavoriteAssets.Count + FavoriteExchanges.Count}", "Assets + Exchanges", "Star"));
             Stats.Add(new StatTileVM("Pairs", loadedPairs.ToString("N0"), "CEX pairs already prefetched", "LinkVariant"));
+
+            Stats.Add(new StatTileVM("Favorites", $"{FavoriteAssets.Count + FavoriteExchanges.Count + FavoriteRWAs.Count}", "Assets + Exchanges + RWAs", "Star"));
         }
 
         private static string FormatUsd(decimal v)
@@ -192,15 +232,24 @@ namespace DIAdataDesktop.ViewModels
             var url = $"https://www.diadata.org/app/source/defi/{name}/";
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
+
+        private static void OpenRwaApp(DiaRwaRow row)
+        {
+            var url = row.AppUrl; // z.B. https://www.diadata.org/app/rwa/NG/
+            if (string.IsNullOrWhiteSpace(url)) return;
+
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
     }
 
     public sealed class FavoriteTileVM : ObservableObject
     {
-        public FavoriteTileVM(string title, string subtitle, string? iconUrl, Action open, Func<Task> toggleFavorite)
+        public FavoriteTileVM(string title, string subtitle, string? iconUrl, string? iconPngPath, Action open, Func<Task> toggleFavorite)
         {
             Title = title;
             Subtitle = subtitle;
             IconUrl = iconUrl;
+            IconPngPath = iconPngPath;
 
             OpenCommand = new RelayCommand(open);
             ToggleFavoriteCommand = new AsyncRelayCommand(toggleFavorite);
@@ -209,6 +258,7 @@ namespace DIAdataDesktop.ViewModels
         public string Title { get; }
         public string Subtitle { get; }
         public string? IconUrl { get; }
+        public string? IconPngPath { get; }
 
         public IRelayCommand OpenCommand { get; }
         public IAsyncRelayCommand ToggleFavoriteCommand { get; }

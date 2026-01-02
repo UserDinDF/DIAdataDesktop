@@ -75,7 +75,7 @@ namespace DIAdataDesktop.ViewModels
             Add(RwaType.Commodities, "XAGG", "XAGG-USD", "Silver");
             Add(RwaType.Commodities, "XAU", "XAU-USD", "Gold");
 
-            // Forex (note: your list includes reversed pairs too)
+            // Forex 
             Add(RwaType.Forex, "CAD", "CAD-USD", "CAD / USD");
             Add(RwaType.Forex, "AUD", "AUD-USD", "AUD / USD");
             Add(RwaType.Forex, "CNY", "CNY-USD", "CNY / USD");
@@ -182,6 +182,18 @@ namespace DIAdataDesktop.ViewModels
             Add(RwaType.Equities, "GOOG", "GOOG", "Alphabet");
             Add(RwaType.Equities, "NVDA", "NVDA", "NVIDIA");
             Add(RwaType.Equities, "AAPL", "AAPL", "Apple");
+        }
+
+        public List<DiaRwaRow> GetAllRowsSnapshot()
+        {
+            return _all.ToList();
+        }
+
+        public async Task ToggleFavoriteByKeyAsync(string favKey, CancellationToken ct = default)
+        {
+            var row = _all.FirstOrDefault(x => string.Equals(x.FavKey, favKey, StringComparison.OrdinalIgnoreCase));
+            if (row == null) return;
+            await ToggleFavorite(row);
         }
 
         private void Add(RwaType type, string appSlug, string apiTicker, string name)

@@ -81,7 +81,7 @@
         </Style>
 
         <DataTemplate x:Key="FavAssetTemplate">
-            <Border Style="{StaticResource FavItemBorder}" Margin="0,0,14,14" Width="320">
+            <Border Style="{StaticResource FavItemBorder}" Margin="0,0,14,14" Width="250">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="38"/>
@@ -120,7 +120,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="FavExchangeTemplate">
-            <Border Style="{StaticResource FavItemBorder}" Margin="0,0,14,14" Width="320">
+            <Border Style="{StaticResource FavItemBorder}" Margin="0,0,14,14" Width="250">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="38"/>
@@ -137,8 +137,8 @@
                     </Border>
 
                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Title}" Foreground="#E5E7EB" FontWeight="SemiBold" FontSize="14"/>
-                        <TextBlock Text="{Binding Subtitle}" Foreground="#94A3B8" FontSize="11" Margin="0,2,0,0"/>
+                        <TextBlock Text="{Binding Title}" TextWrapping="WrapWithOverflow"  Foreground="#E5E7EB" FontWeight="SemiBold" FontSize="14"/>
+                        <TextBlock Text="{Binding Subtitle}" TextWrapping="WrapWithOverflow" Foreground="#94A3B8" FontSize="11" Margin="0,2,0,0"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
@@ -159,6 +159,44 @@
             </Border>
         </DataTemplate>
 
+        <DataTemplate x:Key="FavRwaTemplate">
+            <Border Style="{StaticResource FavItemBorder}" Margin="0,0,14,14" Width="250">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="38"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Width="38" Height="38" CornerRadius="12"
+                    Background="#0B1220" BorderBrush="#24314E" BorderThickness="1"
+                    ClipToBounds="True">
+                        <Image Source="{Binding IconPngPath}" Stretch="UniformToFill"/>
+                    </Border>
+
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Title}" Foreground="#E5E7EB" FontWeight="SemiBold" FontSize="14"/>
+                        <TextBlock Text="{Binding Subtitle}" Foreground="#94A3B8" FontSize="11" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource MiniIconButton}"
+                        Command="{Binding ToggleFavoriteCommand}"
+                        ToolTip="Remove from favorites"
+                        Margin="0,0,8,0">
+                            <materialDesign:PackIcon Kind="Star" Width="16" Height="16" Foreground="#FBBF24"/>
+                        </Button>
+
+                        <Button Style="{StaticResource MiniIconButton}"
+                        Command="{Binding OpenCommand}"
+                        ToolTip="Open RWA app">
+                            <materialDesign:PackIcon Kind="OpenInNew" Width="16" Height="16" Foreground="#64748B"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid Background="{StaticResource PageBg}">
@@ -169,7 +207,6 @@
                            FontSize="28"
                            FontWeight="SemiBold"/>
 
-                <!-- DASHBOARD STATS -->
                 <TextBlock Text="Dashboard"
            Foreground="#E5E7EB"
            FontSize="18"
@@ -318,6 +355,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="16"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
@@ -336,7 +375,7 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
 
-                        <TextBlock Text="No favorite assets yet. Star some tokens in Explore Assets."
+                        <TextBlock Text="No favorite assets yet. Star some tokens in Explore Assets." TextWrapping="WrapWithOverflow"
                                    Foreground="#94A3B8"
                                    Margin="0,4,0,0">
                             <TextBlock.Style>
@@ -355,7 +394,7 @@
                     <StackPanel Grid.Column="2">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                             <TextBlock Text="Favorites — Exchanges" Foreground="#E5E7EB" FontSize="16" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding FavoriteExchanges.Count, StringFormat=  ({0})}"
+                            <TextBlock Text="{Binding FavoriteExchanges.Count, StringFormat=  ({0})}" 
                                        Foreground="#64748B" FontSize="16" FontWeight="SemiBold" Margin="8,0,0,0"/>
                         </StackPanel>
 
@@ -368,7 +407,7 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
 
-                        <TextBlock Text="No favorite exchanges yet. Star some exchanges in Explore Exchanges."
+                        <TextBlock Text="No favorite exchanges yet. Star some exchanges in Explore Exchanges." TextWrapping="WrapWithOverflow"
                                    Foreground="#94A3B8"
                                    Margin="0,4,0,0">
                             <TextBlock.Style>
@@ -384,10 +423,43 @@
                             </TextBlock>
 
                     </StackPanel>
+
+                    <Border Height="22" Background="Transparent"/>
+
+                    <StackPanel Grid.Column="4">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="Favorites — RWAs" Foreground="#E5E7EB" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding FavoriteRWAs.Count, StringFormat=  ({0})}"
+                   Foreground="#64748B" FontSize="16" FontWeight="SemiBold" Margin="8,0,0,0"/>
+                        </StackPanel>
+
+                        <ItemsControl ItemsSource="{Binding FavoriteRWAs}"
+                  ItemTemplate="{StaticResource FavRwaTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+
+                        <TextBlock Text="No favorite RWAs yet. Star some RWAs in Explore RWA." TextWrapping="WrapWithOverflow"
+               Foreground="#94A3B8"
+               Margin="0,4,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasFavoriteRWAs}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
                 </Grid>
 
                 <Border Height="30" Background="Transparent"/>
-
             </StackPanel>
         </ScrollViewer>
     </Grid>
