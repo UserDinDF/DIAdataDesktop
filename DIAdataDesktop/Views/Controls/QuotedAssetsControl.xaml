@@ -86,7 +86,7 @@
 
     </UserControl.Resources>
 
-    <Grid>
+    <Grid PreviewMouseWheel="BubbleMouseWheelToParent">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="14"/>
@@ -101,7 +101,7 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Explore Tokens" Foreground="#E5E7EB" FontSize="22" FontWeight="SemiBold"/>
-                    <TextBlock Margin="5,0,0,0" Text="{Binding FilteredCount, StringFormat=  ({0} shown)}"
+                    <TextBlock Margin="5,0,0,0" Text="{Binding PagedRows.Count, Mode=OneWay, StringFormat=  ({0} shown)}"
                                Foreground="#64748B" FontSize="22" FontWeight="SemiBold"/>
                     <TextBlock Margin="10,0,0,0" Text="{Binding TotalCount, StringFormat=  / {0} total}"
                                Foreground="#475569" FontSize="22" FontWeight="SemiBold"/>
@@ -126,10 +126,11 @@
 
                     <TextBlock Foreground="#64748B" Margin="18,0,6,0" VerticalAlignment="Center" Text="Page size"/>
                     <ComboBox Style="{StaticResource DarkComboBox}"
-              Width="auto"
-              ItemsSource="{Binding PageSizes}"
-              SelectedItem="{Binding PageSize, Mode=TwoWay}"
-              Margin="0,0,16,0"/>
+          MinWidth="90"
+          Width="Auto"
+          ItemsSource="{Binding PageSizes}"
+          SelectedItem="{Binding PageSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+          Margin="0,0,16,0"/>
 
                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Center">
                         <TextBlock Foreground="#64748B" VerticalAlignment="Center" Text="Blockchain" Margin="0,0,8,0"/>

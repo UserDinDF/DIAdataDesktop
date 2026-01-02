@@ -189,47 +189,23 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Scrollable menu -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
-
-                        <!-- ===== Data library section header ===== -->
                         <TextBlock Text="Data library" Style="{StaticResource SidebarSectionHeader}"/>
 
-                        <!-- Sub items: shown when group is "active" or user clicked group.
-                             If du willst: nur aufklappen wenn SelectedNav in einem Submenu ist,
-                             sag kurz, dann mache ich das rein. -->
                         <StackPanel Margin="0,4,0,0">
                             <StackPanel.Style>
                                 <Style TargetType="StackPanel">
                                     <Setter Property="Visibility" Value="Visible"/>
-                                    <!-- optional: collapse when not on any data section -->
-                                    <!--
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedNav}" Value="DigitalAssets">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding SelectedNav}" Value="RealWorldAssets">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding SelectedNav}" Value="Randomness">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding SelectedNav}" Value="DataLibrary">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    -->
                                 </Style>
                             </StackPanel.Style>
 
                             <ToggleButton Style="{StaticResource SidebarSubItem}"
-                  Tag="Exchanges"
-                  Click="Nav_Click"
-                  IsChecked="{Binding SelectedNav, Mode=TwoWay,
-                                      Converter={StaticResource StringEqualsToBool},
-                                      ConverterParameter=Exchanges}">
+                                          Tag="Exchanges"
+                                          Click="Nav_Click"
+                                          IsChecked="{Binding SelectedNav, Mode=TwoWay,
+                                          Converter={StaticResource StringEqualsToBool},
+                                          ConverterParameter=Exchanges}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="18"/>
@@ -239,7 +215,7 @@
                                                              Foreground="{StaticResource SbMuted}"
                                                              VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Text="Exchanges" FontSize="13"
-                                               Foreground="{StaticResource SbMuted}"
+                                               Foreground="{StaticResource SbText}"
                                                FontWeight="SemiBold"
                                                VerticalAlignment="Center"/>
                                 </Grid>
@@ -261,7 +237,7 @@
                                                              Foreground="{StaticResource SbMuted}"
                                                              VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Text="Digital assets" FontSize="13"
-                                               Foreground="{StaticResource SbMuted}"
+                                               Foreground="{StaticResource SbText}"
                                                FontWeight="SemiBold"
                                                VerticalAlignment="Center"/>
                                 </Grid>
@@ -282,35 +258,14 @@
                                                              Foreground="{StaticResource SbMuted}"
                                                              VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Text="Real-world assets" FontSize="13"
-                                               Foreground="{StaticResource SbMuted}"
-                                               FontWeight="SemiBold"
-                                               VerticalAlignment="Center"/>
-                                </Grid>
-                            </ToggleButton>
-
-                            <ToggleButton Style="{StaticResource SidebarSubItem}"
-                                          Tag="Randomness"
-                                          Click="Nav_Click"
-                                          IsChecked="{Binding SelectedNav, Mode=TwoWay,
-                                                              Converter={StaticResource StringEqualsToBool},
-                                                              ConverterParameter=Randomness}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="18"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <materialDesign:PackIcon Grid.Column="0" Kind="ShuffleVariant" Width="16" Height="16"
-                                                             Foreground="{StaticResource SbMuted}"
-                                                             VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Text="Randomness" FontSize="13"
-                                               Foreground="{StaticResource SbMuted}"
+                                               Foreground="{StaticResource SbText}"
                                                FontWeight="SemiBold"
                                                VerticalAlignment="Center"/>
                                 </Grid>
                             </ToggleButton>
                         </StackPanel>
 
-                        <!-- ===== Standalone items like web ===== -->
+
                         <ToggleButton Style="{StaticResource SidebarMainItem}"
                                       Tag="OraclePlayground"
                                       Click="Nav_Click"
@@ -334,8 +289,8 @@
                                            VerticalAlignment="Center"/>
 
                                 <materialDesign:PackIcon Grid.Column="2" Kind="OpenInNew" Width="16" Height="16"
-Foreground="{StaticResource SbMuted}"
-VerticalAlignment="Center"/>
+                                                         Foreground="{StaticResource SbMuted}"
+                                                         VerticalAlignment="Center"/>
                             </Grid>
                         </ToggleButton>
 
@@ -366,10 +321,8 @@ VerticalAlignment="Center"/>
                             </Grid>
                         </ToggleButton>
 
-                        <!-- ===== Tools header ===== -->
                         <TextBlock Text="Tools" Style="{StaticResource SidebarSectionHeader}"/>
 
-                        <!-- GROUP: Staking (like web, with chevron) -->
                         <ToggleButton x:Name="ToolsStakingGroup"
                                       Style="{StaticResource SidebarMainItem}"
                                       Tag="Staking"
@@ -399,7 +352,6 @@ VerticalAlignment="Center"/>
                             </Grid>
                         </ToggleButton>
 
-                        <!-- Bridge as separate item (like screenshot) -->
                         <ToggleButton Style="{StaticResource SidebarMainItem}"
                                       Tag="Bridge" 
                                       Click="Nav_Click"
@@ -426,7 +378,6 @@ VerticalAlignment="Center"/>
                             </Grid>
                         </ToggleButton>
 
-                        <!-- Your existing Watchlist popup (kept) -->
                         <ToggleButton Style="{StaticResource SidebarMainItem}"
                                       Click="OpenWatchlistWidget_Click"
                                       Margin="0,12,0,0">
@@ -453,7 +404,6 @@ VerticalAlignment="Center"/>
                             </Grid>
                         </ToggleButton>
 
-                        <!-- ===== Help header ===== -->
                         <TextBlock Text="Help" Style="{StaticResource SidebarSectionHeader}"/>
 
                         <Button Style="{StaticResource SidebarLinkItem}">
@@ -504,7 +454,6 @@ VerticalAlignment="Center"/>
             </DockPanel>
         </Border>
 
-        <!-- splitter -->
         <GridSplitter Grid.Column="1"
                       Width="12"
                       Background="#0B1220"
@@ -512,9 +461,7 @@ VerticalAlignment="Center"/>
                       VerticalAlignment="Stretch"
                       ShowsPreview="False"/>
 
-        <!-- ================= CONTENT ================= -->
         <Grid Grid.Column="2" Margin="18">
-            <!-- FIX: deine Row-Definitionen waren falsch (Row=2 gab’s nicht) -->
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <ContentControl x:Name="MainContent" Margin="0,0,5,0"/>
             </ScrollViewer>

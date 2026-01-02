@@ -38,8 +38,10 @@ namespace DIAdataDesktop.ViewModels
         private readonly List<DiaQuotedAssetRow> _allRows = new();
         private List<DiaQuotedAssetRow> _filteredRows = new();
 
-        // Seite (UI bindet hier)
+        // Seite 
         public ObservableCollection<DiaQuotedAssetRow> PagedRows { get; } = new();
+        public ObservableCollection<int> PageSizes { get; } = new() { 15, 30, 60, 120 };
+
 
         [ObservableProperty] private string selectedBlockchain = "(All)";
         [ObservableProperty] private string searchText = "";

@@ -64,7 +64,6 @@ namespace DIAdataDesktop.ViewModels
 
         private static string ExchangeKey(string? name) => FavoritesRepository.MakeExchangeKey(name);
 
-        // ---------- UI triggers ----------
         partial void OnSearchTextChanged(string value)
         {
             CurrentPage = 1;
@@ -85,7 +84,6 @@ namespace DIAdataDesktop.ViewModels
             NextPageCommand.NotifyCanExecuteChanged();
         }
 
-        // ---------- Paging commands ----------
         [RelayCommand(CanExecute = nameof(CanPrev))]
         private void PrevPage() => CurrentPage--;
 
@@ -99,7 +97,6 @@ namespace DIAdataDesktop.ViewModels
         [RelayCommand] private void GoToFirst() => CurrentPage = 1;
         [RelayCommand] private void GoToLast() => CurrentPage = TotalPages;
 
-        // ---------- Public API ----------
         public async Task InitializeAsync(CancellationToken ct = default)
         {
             if (_loadedOnce)
@@ -161,7 +158,6 @@ namespace DIAdataDesktop.ViewModels
             if (ex != null) await ToggleFavorite(ex);
         }
 
-        // ---------- Core flow (no duplication) ----------
         private async Task FetchAndApplyAsync(bool merge, CancellationToken ct)
         {
             try

@@ -63,5 +63,16 @@ namespace DIAdataDesktop.Views.Controls
             {
             }
         }
+
+        private void BubbleMouseWheelToParent(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+            var ev = new System.Windows.Input.MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            {
+                RoutedEvent = UIElement.MouseWheelEvent,
+                Source = sender
+            };
+            ((UIElement)sender).RaiseEvent(ev);
+        }
     }
 }

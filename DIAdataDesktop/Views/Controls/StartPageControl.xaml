@@ -199,7 +199,7 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid Background="{StaticResource PageBg}">
+    <Grid Background="{StaticResource PageBg}" PreviewMouseWheel="BubbleMouseWheelToParent">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="0">
                 <TextBlock Text="Welcome to the DIA Desktop App"

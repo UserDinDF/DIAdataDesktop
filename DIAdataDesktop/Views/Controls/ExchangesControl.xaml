@@ -57,7 +57,7 @@
 
     </UserControl.Resources>
 
-    <Grid>
+    <Grid PreviewMouseWheel="BubbleMouseWheelToParent">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="14"/>
@@ -68,7 +68,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Exchanges" Foreground="#E5E7EB" FontSize="22" FontWeight="SemiBold"/>
                 <TextBlock Margin="8,0,0,0"
-                           Text="{Binding FilteredCount, StringFormat= ({0} shown)}"
+                           Text="{Binding PagedRows.Count, Mode=OneWay, StringFormat= ({0} shown)}"
                            Foreground="#64748B" FontSize="22" FontWeight="SemiBold"/>
                 <TextBlock Margin="10,0,0,0"
                            Text="{Binding TotalCount, StringFormat= / {0} total}"
