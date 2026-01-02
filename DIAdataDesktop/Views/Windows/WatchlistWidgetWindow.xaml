@@ -96,6 +96,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Top bar -->
@@ -181,7 +182,7 @@
 
                 <!-- Rows -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Rows}">
+                    <ItemsControl ItemsSource="{Binding TokenRows}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Style="{StaticResource RowButton}"
@@ -196,7 +197,7 @@
                                                 <!-- Icon -->
                                                 <ColumnDefinition Width="78"/>
                                                 <ColumnDefinition Width="88"/>
-                                                <ColumnDefinition Width="74"/>
+                                                <ColumnDefinition Width="85"/>
                                                 <ColumnDefinition Width="60"/>
                                                 <ColumnDefinition Width="90"/>
                                                 <ColumnDefinition Width="110"/>
@@ -249,7 +250,7 @@
                                                 <TextBlock Text="{Binding Change, Converter={StaticResource ChangeToArrowConverter}}"
                                                            Foreground="{Binding Change, Converter={StaticResource ChangeToBrushConverter}}"
                                                            FontWeight="SemiBold" Margin="0,0,4,0"/>
-                                                <TextBlock Text="{Binding Change, StringFormat={}{0:N6}}"
+                                                <TextBlock Text="{Binding Change, StringFormat={}{0:N2}}"
                                                            Foreground="{Binding Change, Converter={StaticResource ChangeToBrushConverter}}"
                                                            FontWeight="SemiBold"/>
                                             </StackPanel>
@@ -287,5 +288,106 @@
                 </ScrollViewer>
             </Grid>
         </Border>
+
+        <!-- RWA TABLE -->
+        <Border Grid.Row="3" CornerRadius="14" Background="#111B35" BorderBrush="#1E2A46" BorderThickness="1" Margin="0,12,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Background="#0B1220" BorderBrush="#1E2A46" BorderThickness="0,0,0,1" Padding="8,6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="28"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="2" Text="RWA" Style="{StaticResource HeaderText}"/>
+                        <TextBlock Grid.Column="3" Text="Name" Style="{StaticResource HeaderText}"/>
+                        <TextBlock Grid.Column="4" Text="Price" Style="{StaticResource HeaderText}"/>
+                        <TextBlock Grid.Column="5" Text="Updated" Style="{StaticResource HeaderText}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Rows -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding RwaRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource RowButton}"
+                                Command="{Binding DataContext.OpenRwaDetailsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding Row}">
+                                    <Border BorderBrush="#1E2A46" BorderThickness="0,0,0,1" Padding="8,7">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="28"/>
+                                                <ColumnDefinition Width="30"/>
+                                                <ColumnDefinition Width="140"/>
+                                                <ColumnDefinition Width="180"/>
+                                                <ColumnDefinition Width="90"/>
+                                                <ColumnDefinition Width="90"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- ⭐ Favorite -->
+                                            <Button Grid.Column="0"
+                                            Style="{StaticResource StarIconButton}"
+                                            Command="{Binding DataContext.ToggleRwaFavoriteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding Row}"
+                                            Focusable="False">
+                                                <materialDesign:PackIcon Width="16" Height="16">
+                                                    <materialDesign:PackIcon.Style>
+                                                        <Style TargetType="materialDesign:PackIcon">
+                                                            <Setter Property="Kind" Value="StarOutline"/>
+                                                            <Setter Property="Foreground" Value="#64748B"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                                    <Setter Property="Kind" Value="Star"/>
+                                                                    <Setter Property="Foreground" Value="#FBBF24"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </materialDesign:PackIcon.Style>
+                                                </materialDesign:PackIcon>
+                                            </Button>
+
+                                            <!-- Icon -->
+                                            <Border Grid.Column="1"
+                                            Width="22" Height="22" CornerRadius="6"
+                                            Background="#0B1220" BorderBrush="#24314E" BorderThickness="1"
+                                            ClipToBounds="True" VerticalAlignment="Center">
+                                                <Image Source="{Binding IconPath}" Stretch="UniformToFill"/>
+                                            </Border>
+
+                                            <!-- Ticker + Type -->
+                                            <StackPanel Grid.Column="2">
+                                                <TextBlock Text="{Binding Ticker}" FontWeight="SemiBold" Foreground="White"/>
+                                                <TextBlock Text="{Binding Type}" Foreground="#64748B" FontSize="10"/>
+                                            </StackPanel>
+
+                                            <!-- Name -->
+                                            <TextBlock Grid.Column="3" Text="{Binding Name}" Foreground="#94A3B8" TextTrimming="CharacterEllipsis"/>
+
+                                            <!-- Price -->
+                                            <TextBlock Grid.Column="4" Text="{Binding Price, StringFormat={}{0:N4}}" Foreground="White"/>
+
+                                            <!-- Updated -->
+                                            <TextBlock Grid.Column="5" Text="{Binding UpdatedTime, StringFormat={}{0:HH:mm:ss}}" Foreground="#94A3B8"/>
+                                        </Grid>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
     </Grid>
 </Window>

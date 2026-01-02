@@ -197,7 +197,7 @@ namespace DIAdataDesktop
                 return;
             }
 
-            var wvm = new WatchlistWidgetViewModel(quotedAssetsView);
+            var wvm = new WatchlistWidgetViewModel(quotedAssetsView, mainViewModel.RwaVm);
             
             _widgetWin = new WatchlistWidgetWindow(wvm)
             {
