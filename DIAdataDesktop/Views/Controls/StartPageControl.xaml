@@ -207,11 +207,29 @@
                            FontSize="28"
                            FontWeight="SemiBold"/>
 
+                <Border Panel.ZIndex="999" Margin="0,10,0,0"
+                        Background="#AA0B1220"
+                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="520">
+                        <Border CornerRadius="18" Background="#111B35" BorderBrush="#1E2A46" BorderThickness="1" Padding="18">
+                            <StackPanel>
+                                <TextBlock Text="Loading DIA data..." Foreground="#E5E7EB" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Margin="0,8,0,0" Foreground="#94A3B8" Text="{Binding Step}"/>
+
+                                <ProgressBar Height="10" Margin="0,14,0,0" Minimum="0" Maximum="100"
+                                             Background="#2C4688" Foreground="White" Value="{Binding Progress}"/>
+
+                                <TextBlock Margin="0,6,0,0" Foreground="#64748B" FontSize="11" Text="{Binding Progress, StringFormat={}{0:0}%}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
                 <TextBlock Text="Dashboard"
-           Foreground="#E5E7EB"
-           FontSize="18"
-           FontWeight="SemiBold"
-           Margin="0,10,0,10"/>
+                           Foreground="#E5E7EB"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Margin="0,10,0,10"/>
 
                 <ItemsControl ItemsSource="{Binding Stats}">
                     <ItemsControl.ItemsPanel>

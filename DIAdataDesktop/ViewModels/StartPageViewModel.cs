@@ -20,6 +20,10 @@ namespace DIAdataDesktop.ViewModels
         private readonly FavoritesRepository _favoritesRepo;
         private readonly RwaViewModel _rwas;
 
+        [ObservableProperty] private bool isLoading;
+        [ObservableProperty] private double progress;   
+        [ObservableProperty] private string step = "Starting...";
+
         public ObservableCollection<FavoriteTileVM> FavoriteAssets { get; } = new();
         public ObservableCollection<FavoriteTileVM> FavoriteExchanges { get; } = new();
         public ObservableCollection<FavoriteTileVM> FavoriteRWAs { get; } = new();
@@ -169,18 +173,21 @@ namespace DIAdataDesktop.ViewModels
         {
             var assets = _assets.GetAllRowsSnapshot();
             var exchanges = _exchanges._all;
+            var rwas = _rwas.GetAllRowsSnapshot();
 
-            // Assets
             var assetsCount = assets.Count;
             var assetsVol = assets.Sum(x => (decimal)x.Volume);
             var topAsset = assets.OrderByDescending(x => x.Volume).FirstOrDefault();
 
-            // Exchanges
             var exCount = exchanges.Count;
             var exVol = exchanges.Sum(x => (decimal)x.Volume24h);
             var topEx = exchanges.OrderByDescending(x => x.Volume24h).FirstOrDefault();
 
-            var loadedPairs = assets.Sum(a => a.CexPairs?.Count ?? 0);
+            var rwaCount = rwas.Count;
+            var topRwa = rwas
+                .Where(r => r.Price > 0)
+                .OrderByDescending(r => r.Price)
+                .FirstOrDefault();
 
             Stats.Clear();
 
@@ -200,9 +207,24 @@ namespace DIAdataDesktop.ViewModels
             else
                 Stats.Add(new StatTileVM("Top Exchange", "-", "No data yet", "TrophyOutline"));
 
-            Stats.Add(new StatTileVM("Pairs", loadedPairs.ToString("N0"), "CEX pairs already prefetched", "LinkVariant"));
+            Stats.Add(new StatTileVM("RWAs", rwaCount.ToString("N0"), "Total RWAs loaded", "BankOutline"));
 
-            Stats.Add(new StatTileVM("Favorites", $"{FavoriteAssets.Count + FavoriteExchanges.Count + FavoriteRWAs.Count}", "Assets + Exchanges + RWAs", "Star"));
+            if (topRwa != null)
+                Stats.Add(new StatTileVM("Top RWA", topRwa.AppSlug, $"{topRwa.TypeLabel} • {topRwa.Name}", "TrophyOutline"));
+            else
+                Stats.Add(new StatTileVM("Top RWA", "-", "No data yet", "TrophyOutline"));
+
+            Stats.Add(new StatTileVM(
+                "Favorites",
+                $"{FavoriteAssets.Count + FavoriteExchanges.Count + FavoriteRWAs.Count}",
+                "Assets + Exchanges + RWAs",
+                "Star"));
+        }
+
+        public void SetProgress(double percent, string step)
+        {
+            Progress = Math.Clamp(percent, 0, 100);
+            Step = step;
         }
 
         private static string FormatUsd(decimal v)

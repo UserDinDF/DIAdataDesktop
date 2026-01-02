@@ -49,7 +49,7 @@ namespace DIAdataDesktop.ViewModels
             "Off", "10s", "30s", "60s", "120s"
         };
 
-        [ObservableProperty] private string selectedAutoRefreshInterval = "10s";
+        [ObservableProperty] private string selectedAutoRefreshInterval = "60s";
         [ObservableProperty] private bool isAutoRefreshEnabled = true;
         [ObservableProperty] private string selectedNav = "Quotation";
         
@@ -92,25 +92,43 @@ namespace DIAdataDesktop.ViewModels
         {
             try
             {
+                StartPageVm.IsLoading = true;
                 SetBusyFromShell(true);
 
+                StartPageVm.SetProgress(5, "Initializing assets module...");
                 await QuotedAssets.InitializeAsync();
+
+                StartPageVm.SetProgress(15, "Initializing exchanges module...");
                 await ExchangesVm.InitializeAsync();
+
+                StartPageVm.SetProgress(25, "Initializing RWA module...");
                 await RwaVm.InitializeAsync();
 
+                StartPageVm.SetProgress(45, "Loading quoted assets...");
                 await QuotedAssets.LoadQuotedAssetsAsync();
 
+                StartPageVm.SetProgress(65, "Loading exchanges snapshot...");
                 await ExchangesVm.RefreshSnapshotAsync();
 
+                StartPageVm.SetProgress(80, "Loading start page favorites...");
                 await StartPageVm.InitializeAsync();
 
+                StartPageVm.SetProgress(100, "Ready");
                 LastUpdate = DateTimeOffset.Now;
+            }
+            catch (Exception ex)
+            {
+                Error = ex.Message;
+                StartPageVm.Step = "Load failed";
             }
             finally
             {
                 SetBusyFromShell(false);
+                StartPageVm.IsLoading = false;
             }
         }
+
+
 
         public async Task BuildExchangesVm()
         {
@@ -188,8 +206,6 @@ namespace DIAdataDesktop.ViewModels
             }
         }
 
-
-
         private bool CanRunCommands() => !IsBusy;
 
         private void SetBusyFromChild(bool busy) => SetBusyFromShell(busy);
@@ -200,6 +216,7 @@ namespace DIAdataDesktop.ViewModels
             IsBusy = busy;
             QuotedAssets.IsBusy = busy;
             ExchangesVm.IsBusy = busy;
+            RwaVm.IsBusy = busy;
         }
     }
 }
