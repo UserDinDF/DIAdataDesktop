@@ -3,17 +3,32 @@ using DIAdataDesktop.Views.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Threading;
 using System.Windows;
 
 namespace DIAdataDesktop
 {
     public partial class App : System.Windows.Application
     {
+        private const string MutexName = @"Local\DIAdataDesktop_SingleInstance";
+        private static Mutex? _mutex;
+
         public static IServiceProvider Services { get; private set; } = default!;
         private IHost? _host;
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            // 1) Single instance gate
+            bool createdNew;
+            _mutex = new Mutex(initiallyOwned: true, name: MutexName, createdNew: out createdNew);
+
+            if (!createdNew)
+            {
+                // already running
+                Shutdown();
+                return;
+            }
+
             base.OnStartup(e);
 
             _host = Host.CreateDefaultBuilder()
@@ -21,13 +36,11 @@ namespace DIAdataDesktop
                 {
                     services.AddSingleton<MainViewModel>();
 
-                    // Controls
                     services.AddSingleton<QuotedAssetsControl>();
                     services.AddSingleton<ExchangesControl>();
                     services.AddSingleton<StartPageControl>();
                     services.AddSingleton<RwaControl>();
 
-                    // Window
                     services.AddTransient<MainWindow>();
                 })
                 .Build();
@@ -41,11 +54,19 @@ namespace DIAdataDesktop
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            if (_host != null)
-                await _host.StopAsync();
-
-            _host?.Dispose();
-            base.OnExit(e);
+            try
+            {
+                if (_host != null)
+                    await _host.StopAsync();
+                _host?.Dispose();
+            }
+            finally
+            {
+                _mutex?.ReleaseMutex();
+                _mutex?.Dispose();
+                _mutex = null;
+                base.OnExit(e);
+            }
         }
     }
 }

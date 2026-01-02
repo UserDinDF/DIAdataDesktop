@@ -9,7 +9,7 @@
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>favicon-new.ico</ApplicationIcon>
-    <FileVersion>1.0.0.3</FileVersion>
+    <FileVersion>1.0.0.4</FileVersion>
     <AssemblyVersion></AssemblyVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
