@@ -56,4 +56,17 @@ The application is under active development.
 2. Extract the ZIP
 3. Run `DIAdataDesktop.exe`
 
-No installer required.
+## 🧑‍💻 Run in Visual Studio 2026 (Development)
+
+To run the application locally in **Visual Studio 2026**, follow these steps:
+
+### Requirements
+- Windows 10 or newer
+- Visual Studio 2026
+- .NET SDK (as required by the solution)
+- Workload: **.NET Desktop Development**
+
+### Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/UserDinDF/DIAdataDesktop.git
